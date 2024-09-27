@@ -19,4 +19,4 @@
 
 ## Development
 
-- **Engine**: Unity 2022.3.47f1
+- **Engine**: Unity 2022.3.48f1 (latest LTS to date)
