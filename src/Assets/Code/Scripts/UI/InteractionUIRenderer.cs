@@ -66,18 +66,15 @@ namespace UI
             _interactHoldProgressImage.fillAmount = InteractionInvoker.InteractionProgress;
             _interactText.text = "";
             _interactionUiParentTransform.gameObject.SetActive(hasTarget);
+            _selectionBounds.gameObject.SetActive(hasTarget);
+            UpdateSelectionBounds();
         }
 
 
         private void UpdateSelectionBounds()
         {
             if (_targetedInteractable == null)
-            {
-                _selectionBounds.gameObject.SetActive(false);
                 return;
-            }
-            if (!_selectionBounds.gameObject.activeSelf)
-                _selectionBounds.gameObject.SetActive(true);
 
             Bounds bounds = _targetedInteractable.GetWorldBounds();
             
