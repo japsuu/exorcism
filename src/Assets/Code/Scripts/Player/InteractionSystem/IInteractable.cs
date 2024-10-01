@@ -1,4 +1,6 @@
-﻿namespace Player.InteractionSystem
+﻿using UnityEngine;
+
+namespace Player.InteractionSystem
 {
     /// <summary>
     /// Inherit to make the object interactable.
@@ -27,5 +29,11 @@
         /// Called when an interaction is requested.
         /// </summary>
         public void Interact();
+
+
+        /// <summary>
+        /// Returns the bounds of the object in world space.
+        /// </summary>
+        public Bounds GetWorldBounds();
     }
 }

@@ -123,7 +123,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8331920197431187835}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
@@ -249,8 +249,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efb6fd69926f4881bb1595fb97335d4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _interactTriggerCollider: {fileID: 1009537539555120048}
   _holdInteractionLengthSeconds: 1
   _light: {fileID: 5372258218790748745}
+  _buttonTransform: {fileID: 503650502524117906}
+  _buttonPressDistance: 0.03
+  _buttonPressDuration: 0.1
 --- !u!65 &1009537539555120048
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -266,7 +270,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
