@@ -53,10 +53,10 @@ namespace Player
         }
 
 
-        private void SetInputs(Inputs input)
+        private void SetInputs(InputData inputData)
         {
-            _targetHorizontalAxis += input.MouseInput.x * rotationSensitivity;
-            _targetVerticalAxis += -input.MouseInput.y * rotationSensitivity;
+            _targetHorizontalAxis += inputData.MouseInput.x * rotationSensitivity;
+            _targetVerticalAxis += -inputData.MouseInput.y * rotationSensitivity;
 
             _targetVerticalAxis = Mathf.Clamp(_targetVerticalAxis, -cameraVerticalLimit, cameraVerticalLimit);
         }

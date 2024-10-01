@@ -93,21 +93,21 @@ namespace Player
         }
 
 
-        private void SetInputs(Inputs input)
+        private void SetInputs(InputData inputData)
         {
             if (movementDirectionTransform == null)
-                _movementInput = input.NormalizedMovementInput;
+                _movementInput = inputData.NormalizedMovementInput;
             else
-                _movementInput = movementDirectionTransform.TransformDirection(input.NormalizedMovementInput);
+                _movementInput = movementDirectionTransform.TransformDirection(inputData.NormalizedMovementInput);
 
             // Jumping input
-            if (input.IsJumping)
+            if (inputData.IsJumping)
             {
                 _timeSinceJumpRequested = 0f;
                 _jumpRequested = true;
             }
 
-            _sprinting = input.IsSprinting;
+            _sprinting = inputData.IsSprinting;
         }
 
 

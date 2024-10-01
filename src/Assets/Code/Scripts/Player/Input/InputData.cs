@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 
 namespace Player
 {
-    public struct Inputs
+    [Serializable]
+    public struct InputData
     {
         public Vector3 NormalizedMovementInput;
         public Vector2 MouseInput;
