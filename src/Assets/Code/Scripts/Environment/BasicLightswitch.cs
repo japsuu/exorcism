@@ -1,4 +1,5 @@
-﻿using Player.InteractionSystem;
+﻿using DG.Tweening;
+using Player.InteractionSystem;
 using UnityEngine;
 
 namespace Environment
@@ -10,6 +11,15 @@ namespace Environment
     {
         [SerializeField]
         private Light _light;
+
+        [SerializeField]
+        private Transform _buttonTransform;
+
+        [SerializeField]
+        private float _buttonPressDistance = 0.03f;
+
+        [SerializeField]
+        private float _buttonPressDuration = 0.1f;
 
         private bool _isLightOn;
 
@@ -30,6 +40,9 @@ namespace Environment
         {
             _isLightOn = !_isLightOn;
             _light.enabled = _isLightOn;
+            
+            float targetY = _isLightOn ? _buttonTransform.localPosition.y - _buttonPressDistance : _buttonTransform.localPosition.y + _buttonPressDistance;
+            _buttonTransform.DOLocalMoveY(targetY, _buttonPressDuration);
         }
     }
 }

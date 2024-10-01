@@ -641,6 +641,12 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 1
+--- !u!4 &461035380 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 503650502524117906, guid: 9ba260d4d3b0cb5479f2b80a54772c02,
+    type: 3}
+  m_PrefabInstance: {fileID: 3464731438950695357}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &473700830
 GameObject:
   m_ObjectHideFlags: 0
@@ -1521,6 +1527,16 @@ PrefabInstance:
     - target: {fileID: 1898604558274190614, guid: 9ba260d4d3b0cb5479f2b80a54772c02,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5339128934470395675, guid: 9ba260d4d3b0cb5479f2b80a54772c02,
+        type: 3}
+      propertyPath: _buttonTransform
+      value: 
+      objectReference: {fileID: 461035380}
+    - target: {fileID: 5372258218790748745, guid: 9ba260d4d3b0cb5479f2b80a54772c02,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8497420652909861496, guid: 9ba260d4d3b0cb5479f2b80a54772c02,
