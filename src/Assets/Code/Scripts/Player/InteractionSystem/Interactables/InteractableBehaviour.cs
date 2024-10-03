@@ -6,7 +6,7 @@ namespace Player.InteractionSystem
     /// More fleshed out version of <see cref="IInteractable"/>.<br/><br/>
     ///
     /// Implement this class if you need to define custom interactions for an object.
-    /// If no custom interactions are necessary, use <see cref="WorldObject"/>.
+    /// If no custom interactions are necessary, use <see cref="StaticInteractableObject"/>.
     /// </summary>
     public abstract class InteractableBehaviour : MonoBehaviour, IInteractable
     {

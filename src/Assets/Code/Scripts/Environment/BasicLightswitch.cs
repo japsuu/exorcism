@@ -7,7 +7,7 @@ namespace Environment
     /// <summary>
     /// Interactable lightswitch that can be turned on/off.
     /// </summary>
-    public class BasicLightswitch : WorldObject
+    public class BasicLightswitch : StaticInteractableObject
     {
         [SerializeField]
         private Light _light;
@@ -22,9 +22,6 @@ namespace Environment
         private float _buttonPressDuration = 0.1f;
 
         private bool _isLightOn;
-
-
-        protected override bool SupportsUseInteraction => true;
 
 
         protected override void Awake()
@@ -47,6 +44,12 @@ namespace Environment
             _light.enabled = _isLightOn;
             
             AnimateButton();
+        }
+
+
+        protected override void UseStop()
+        {
+            // Nothing to do here.
         }
 
 

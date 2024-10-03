@@ -6,21 +6,10 @@ using UnityEngine;
 namespace Player.InteractionSystem
 {
     /// <summary>
+    /// A simple wrapper around <see cref="InteractableBehaviour"/> for objects that can be interacted with.
     /// </summary>
-    public class WorldObject : InteractableBehaviour
+    public abstract class InteractableObject : InteractableBehaviour
     {
-        [Tooltip("Whether you can position the object in the world.\n" +
-                 "Hold the right mouse button while grabbing to rotate the object around the X and Y axis.")]
-        [Header("Interaction Settings")]
-        [SerializeField] private bool _canBeGrabbed;
-
-        [Tooltip("Whether the item can be placed in your hand.")]
-        [SerializeField] private bool _canBeHeld;
-
-        [Tooltip("Whether the item can be placed in your inventory.")]
-        [SerializeField] private bool _canBeCollected;
-        
-        
         [Header("Object Info")]
         [SerializeField] private string _name;
         [SerializeField] private string _description;
@@ -30,11 +19,8 @@ namespace Player.InteractionSystem
         private IInteraction[] _supportedInteractions;
         [SerializeField, ReadOnly]
         private string[] _supportedInteractionNamesCache;
-        private bool _isDragging;
 
-
-#region Public API
-
+        
         /// <summary>
         /// Override to implement a dynamic name.
         /// </summary>
@@ -49,20 +35,7 @@ namespace Player.InteractionSystem
         public override string GetDescription() => _description;
 
 
-        public void GrabStart()
-        {
-            _isDragging = true;
-        }
-
-
-        public void GrabStop()
-        {
-            _isDragging = false;
-        }
-
-
-        public void Hold() => Debug.LogError("Holding not implemented.");
-        public void Collect() => Debug.LogError("Collecting/Inventory not implemented.");
+#region Public API
 
 
         public sealed override void InteractionStart(int index)
@@ -120,41 +93,6 @@ namespace Player.InteractionSystem
 
 #region Protected API
 
-        /// <summary>
-        /// Whether the object supports the "Use" interaction type.<br/>
-        /// If true, the <see cref="UseStart"/> and <see cref="UseStop"/> methods should be overridden.
-        /// </summary>
-        protected virtual bool SupportsUseInteraction => false;
-
-        /// <summary>
-        /// Override to add custom interactions to the object.
-        /// </summary>
-        /// <param name="supportedInteractions">The list to add interactions to.</param>
-        protected virtual void AddCustomInteractions(List<IInteraction> supportedInteractions) { }
-        
-        
-        /// <summary>
-        /// Override to implement the "Use" interaction type.
-        /// Called when the player presses the "interact" key.
-        /// 
-        /// <remarks>
-        /// Only called if <see cref="SupportsUseInteraction"/> is true.
-        /// </remarks>
-        /// </summary>
-        protected virtual void UseStart() { }
-        
-        
-        /// <summary>
-        /// Override to implement the "Use" interaction type.
-        /// Called when the player releases the "interact" key.
-        /// 
-        /// <remarks>
-        /// Only called if <see cref="SupportsUseInteraction"/> is true.
-        /// </remarks>
-        /// </summary>
-        protected virtual void UseStop() { }
-
-
         protected virtual void Awake()
         {
             FindSupportedInteractions();
@@ -163,19 +101,10 @@ namespace Player.InteractionSystem
 
         protected virtual void Update()
         {
-            if (_isDragging)
-            {
-                transform.position = InteractionInvoker.Instance.GrabTargetPosition;
-                
-                if (Input.GetMouseButton(1))
-                {
-                    Vector3 eulerAngles = transform.eulerAngles;
-                    eulerAngles.x += Input.GetAxis("Mouse Y") * 2;
-                    eulerAngles.y += Input.GetAxis("Mouse X") * 2;
-                    transform.eulerAngles = eulerAngles;
-                }
-            }
+            
         }
+        
+        protected abstract void RegisterInteractions(List<IInteraction> supportedInteractions);
 
 #endregion
 
@@ -186,11 +115,8 @@ namespace Player.InteractionSystem
         {
             List<IInteraction> supportedInteractions = new();
             
-            // Add default interactions
-            AddDefaultInteractions(supportedInteractions);
-
-            // Add custom interactions
-            AddCustomInteractions(supportedInteractions);
+            // Register all available interactions
+            RegisterInteractions(supportedInteractions);
 
             _supportedInteractions = supportedInteractions.ToArray();
             
@@ -203,14 +129,39 @@ namespace Player.InteractionSystem
                 Debug.LogWarning($"No interactions found for object {gameObject}.");
         }
 
-
-        private void AddDefaultInteractions(List<IInteraction> supportedInteractions)
+#endregion
+    }
+    /// <summary>
+    /// Inherit to create a static non-physics interactable object.<br/><br/>
+    ///
+    /// Requires at least one interaction to be defined.
+    /// </summary>
+    public abstract class StaticInteractableObject : InteractableObject
+    {
+#region Protected API
+        
+        /// <summary>
+        /// Override to add custom interactions to the object.
+        /// </summary>
+        /// <param name="supportedInteractions">The list to add interactions to.</param>
+        protected override void RegisterInteractions(List<IInteraction> supportedInteractions)
         {
-            if (_canBeGrabbed)          supportedInteractions.Add(new ActionInteraction("Grab", GrabStart, GrabStop));
-            if (_canBeHeld)             supportedInteractions.Add(new ActionInteraction("Hold", Hold, null));
-            if (_canBeCollected)        supportedInteractions.Add(new ActionInteraction("Collect", Collect, null));
-            if (SupportsUseInteraction) supportedInteractions.Add(new ActionInteraction("Use", UseStart, UseStop));
+            supportedInteractions.Add(new ActionInteraction("Use", UseStart, UseStop));
         }
+
+
+        /// <summary>
+        /// Override to implement the "Use" interaction type.
+        /// Called when the player presses the "interact" key.
+        /// </summary>
+        protected abstract void UseStart();
+        
+        
+        /// <summary>
+        /// Override to implement the "Use" interaction type.
+        /// Called when the player releases the "interact" key.
+        /// </summary>
+        protected abstract void UseStop();
 
 #endregion
     }

@@ -53,7 +53,7 @@ namespace Player.InteractionSystem
         /// <summary>
         /// The position the player is currently looking at, with the current grab distance applied.
         /// </summary>
-        public Vector3 GrabTargetPosition => RaycastPosition + RaycastDirection * _targetGrabDistance;
+        public Vector3 GrabTargetPosition => RaycastPosition + RaycastDirection * _grabDistance;
 
 
         /// <summary>
