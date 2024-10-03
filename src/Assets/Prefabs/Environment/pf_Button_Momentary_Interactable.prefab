@@ -123,11 +123,11 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8331920197431187835}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 0, g: 1, b: 1, a: 1}
   m_Intensity: 10
   m_Range: 3
   m_SpotAngle: 30
@@ -213,7 +213,7 @@ GameObject:
   - component: {fileID: 5339128934470395675}
   - component: {fileID: 1009537539555120048}
   m_Layer: 0
-  m_Name: pf_LightSwitch_Interactable
+  m_Name: pf_Button_Momentary_Interactable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -228,7 +228,7 @@ Transform:
   m_GameObject: {fileID: 8497420652909861496}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.294, y: 1.051, z: 5.208}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -250,13 +250,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interactTriggerCollider: {fileID: 1009537539555120048}
-  _canBeGrabbed: 0
-  _canBeHeld: 0
-  _canBeCollected: 0
   _name: Light Switch
-  _description: Turn {status} the light switch
+  _description: Turn on the light
   _supportedInteractionNamesCache: []
-  _light: {fileID: 5372258218790748745}
+  _toggleTarget: {fileID: 8331920197431187835}
   _buttonTransform: {fileID: 503650502524117906}
   _buttonPressDistance: 0.03
   _buttonPressDuration: 0.1
