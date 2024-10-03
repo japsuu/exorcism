@@ -250,7 +250,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interactTriggerCollider: {fileID: 1009537539555120048}
-  _holdInteractionLengthSeconds: 1
+  _canBeGrabbed: 0
+  _canBeHeld: 0
+  _canBeCollected: 0
+  _name: Light Switch
+  _description: Turn {status} the light switch
+  _supportedInteractionNamesCache: []
   _light: {fileID: 5372258218790748745}
   _buttonTransform: {fileID: 503650502524117906}
   _buttonPressDistance: 0.03

@@ -370,11 +370,11 @@ MonoBehaviour:
   WalkSpeedMax: 4
   SprintSpeedMax: 6
   MovementSharpness: 15
-  AirSpeedMax: 7
+  AirSpeedMax: 4
   AirMovementSharpness: 30
   AirDrag: 0.3
   AllowJumpingWhenSliding: 1
-  JumpForce: 10
+  JumpForce: 7
   JumpScalableForwardSpeed: 0
   JumpPreGroundingGraceTime: 0.1
   JumpPostGroundingGraceTime: 0.1
