@@ -17,7 +17,7 @@ namespace Player.InteractionSystem
         /// <param name="supportedInteractions">The list to add interactions to.</param>
         protected override void RegisterInteractions(List<IInteraction> supportedInteractions)
         {
-            supportedInteractions.Add(new ActionInteraction("Use", UseStart, UseStop));
+            supportedInteractions.Add(new EventInteraction("Use", UseStart, UseStop, ShouldStop));
         }
 
 
@@ -33,6 +33,15 @@ namespace Player.InteractionSystem
         /// Called when the player releases the "interact" key.
         /// </summary>
         protected abstract void UseStop();
+        
+        
+        protected virtual bool ShouldStop(InteractionDataArgs args)
+        {
+            if (!args.IsLookingAtObject)
+                return true;
+            
+            return false;
+        }
 
 #endregion
     }

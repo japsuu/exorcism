@@ -28,7 +28,7 @@ namespace Player.InteractionSystem
 
         protected override void RegisterInteractions(List<IInteraction> supportedInteractions)
         {
-            supportedInteractions.Add(new ActionInteraction("Grab", GrabStart, GrabStop));
+            supportedInteractions.Add(new EventInteraction("Grab", GrabStart, GrabStop, ShouldStop));
         }
 
 
@@ -48,6 +48,15 @@ namespace Player.InteractionSystem
                     transform.eulerAngles = eulerAngles;
                 }
             }
+        }
+        
+        
+        protected virtual bool ShouldStop(InteractionDataArgs args)
+        {
+            if (args.DistanceToInteractable > 5)
+                return true;
+            
+            return false;
         }
     }
 }
