@@ -169,7 +169,7 @@ namespace UI
         }
 
 
-        private void OnInteractTargetChanged(InteractionInvoker.LookAtChangedEventArgs args)
+        private void OnInteractTargetChanged(LookAtChangedEventArgs args)
         {
             bool hasTarget = args.NewLookAt != null;
             

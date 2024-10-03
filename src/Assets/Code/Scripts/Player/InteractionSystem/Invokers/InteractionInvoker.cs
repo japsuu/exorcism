@@ -2,32 +2,15 @@
 using JetBrains.Annotations;
 using Tools;
 using UnityEngine;
-using Debug = System.Diagnostics.Debug;
 
 namespace Player.InteractionSystem
 {
     /// <summary>
     /// Interaction "Manager".
-    /// Triggers interactions and tells the UI to update.
+    /// Triggers interactions and raises events.
     /// </summary>
-    public abstract class InteractionInvoker : MonoBehaviour
+    public abstract class InteractionInvoker : SingletonBehaviour<InteractionInvoker>   // Singleton to ensure only one instance is active.
     {
-        public readonly struct LookAtChangedEventArgs
-        {
-            [CanBeNull]
-            public readonly IInteractable OldLookAt;
-
-            [CanBeNull]
-            public readonly IInteractable NewLookAt;
-
-
-            public LookAtChangedEventArgs(IInteractable oldLookAt, IInteractable newLookAt)
-            {
-                OldLookAt = oldLookAt;
-                NewLookAt = newLookAt;
-            }
-        }
-
         /// <summary>
         /// Called when the player looks at a new object.
         /// </summary>
@@ -37,19 +20,36 @@ namespace Player.InteractionSystem
         /// Called when the currently selected interaction index changes.
         /// </summary>
         public static event Action<int> SelectedInteractionIndexChanged;
+        
+        [Header("Raycasting")]
+        [Tooltip("Used to raycast forward from.")]
+        [SerializeField] private Transform _head;
+        [SerializeField] private bool _doDrawDebugLine;
+        
+        [Header("Interaction Settings")]
+        [SerializeField] private float _interactionDistance = 2f;
+        
+        [Header("Grabbing Settings")]
+        [SerializeField] private float _grabDistanceMin = 1f;
+        [SerializeField] private float _grabDistanceMax = 3f;
+        
+        private int _selectedInteractionIndex;
+        private float _grabDistance = 1f;
 
-        protected abstract Vector3 RaycastPosition { get; }
-        protected abstract Vector3 RaycastDirection { get; }
-        protected abstract float InteractionDistance { get; }
+        private Vector3 RaycastPosition => _head.position;
+        private Vector3 RaycastDirection => _head.forward;
+        
         protected abstract bool IsInteractKeyPressed { get; }
         protected abstract bool IsInteractKeyReleased { get; }
         protected abstract bool IsInteractionEnabled { get; }
         protected abstract int InteractionIndexDelta { get; }
+        protected abstract float GrabDistanceDelta { get; }
         
         
-        [SerializeField]
-        private bool _doDrawDebugLine;
-        private int _selectedInteractionIndex;
+        /// <summary>
+        /// The position the player is currently looking at, with the current grab distance applied.
+        /// </summary>
+        public Vector3 GrabTargetPosition => RaycastPosition + RaycastDirection * _grabDistance;
 
 
         /// <summary>
@@ -89,12 +89,15 @@ namespace Player.InteractionSystem
                 if (IsInteractKeyReleased)
                     StopInteraction();
                 else
+                {
+                    UpdateGrabDistance();
                     return;
+                }
             }
 
             // The player is not interacting with an object.
             // Raycast if we are looking at one.
-            int count = Physics.RaycastNonAlloc(RaycastPosition, RaycastDirection, _results, InteractionDistance);
+            int count = Physics.RaycastNonAlloc(RaycastPosition, RaycastDirection, _results, _interactionDistance);
             for (int i = 0; i < count; i++)
             {
                 GameObject hit = _results[i].transform.gameObject;
@@ -110,13 +113,24 @@ namespace Player.InteractionSystem
                 UpdateInteractionIndex(currentLookAtTarget);
 
                 if (IsInteractKeyPressed)
+                {
                     StartInteraction(currentLookAtTarget, _selectedInteractionIndex);
+                    float distanceToInteractable = Vector3.Distance(RaycastPosition, hit.transform.position);
+                    _grabDistance = Mathf.Clamp(distanceToInteractable, _grabDistanceMin, _grabDistanceMax);
+                }
                 
                 return;
             }
 
             // No hit, reset the targets.
             ResetTargets();
+        }
+
+
+        private void UpdateGrabDistance()
+        {
+            _grabDistance += GrabDistanceDelta;
+            _grabDistance = Mathf.Clamp(_grabDistance, _grabDistanceMin, _grabDistanceMax);
         }
 
 
@@ -189,7 +203,7 @@ namespace Player.InteractionSystem
 
             Gizmos.color = Color.green;
 
-            GizmosExtensions.DrawArrow(RaycastPosition, RaycastPosition + RaycastDirection * InteractionDistance);
+            GizmosExtensions.DrawArrow(RaycastPosition, RaycastPosition + RaycastDirection * _interactionDistance);
         }
     }
 }

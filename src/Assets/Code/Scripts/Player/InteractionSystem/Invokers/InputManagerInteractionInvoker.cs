@@ -9,24 +9,20 @@ namespace Player.InteractionSystem
     [RequireComponent(typeof(PlayerController))]
     public class InputManagerInteractionInvoker : InteractionInvoker
     {
-        [Tooltip("Used to raycast forward from.")]
-        [SerializeField]
-        private Transform _head;
-        
+        [Header("Input Settings")]
         [SerializeField]
         private KeyCode interactKey = KeyCode.F;
         
         [SerializeField]
-        private float _interactionDistance = 2f;
+        private float _grabDistanceSpeed = 0.5f;
 
 
-        protected override Vector3 RaycastPosition => _head.position;
-        protected override Vector3 RaycastDirection => _head.forward;
-        protected override float InteractionDistance => _interactionDistance;
         protected override bool IsInteractKeyPressed => Input.GetKeyDown(interactKey);
         protected override bool IsInteractKeyReleased => Input.GetKeyUp(interactKey);
         protected override bool IsInteractionEnabled => true;
         protected override int InteractionIndexDelta => Input.mouseScrollDelta.y < 0 ? 1 : Input.mouseScrollDelta.y > 0 ? -1 : 0;
+        protected override float GrabDistanceDelta => Input.mouseScrollDelta.y * _grabDistanceSpeed;
+
 
         protected override void HandleInteractionStart(IInteractable interactable, int index)
         {

@@ -7,7 +7,7 @@ namespace Player.InteractionSystem
 {
     /// <summary>
     /// </summary>
-    public abstract class WorldObject : InteractableBehaviour
+    public class WorldObject : InteractableBehaviour
     {
         [Tooltip("Whether you can position the object in the world.\n" +
                  "Hold the right mouse button while grabbing to rotate the object around the X and Y axis.")]
@@ -30,12 +30,7 @@ namespace Player.InteractionSystem
         private IInteraction[] _supportedInteractions;
         [SerializeField, ReadOnly]
         private string[] _supportedInteractionNamesCache;
-        
-        /// <summary>
-        /// Whether the object supports the "Use" interaction type.<br/>
-        /// If true, the <see cref="UseStart"/> and <see cref="UseStop"/> methods should be overridden.
-        /// </summary>
-        protected abstract bool SupportsUseInteraction { get; }
+        private bool _isDragging;
 
 
 #region Public API
@@ -54,8 +49,18 @@ namespace Player.InteractionSystem
         public override string GetDescription() => _description;
 
 
-        public void GrabStart() => Debug.LogError("Grabbing not implemented.");
-        public void GrabStop() => Debug.LogError("Grabbing not implemented.");
+        public void GrabStart()
+        {
+            _isDragging = true;
+        }
+
+
+        public void GrabStop()
+        {
+            _isDragging = false;
+        }
+
+
         public void Hold() => Debug.LogError("Holding not implemented.");
         public void Collect() => Debug.LogError("Collecting/Inventory not implemented.");
 
@@ -116,6 +121,12 @@ namespace Player.InteractionSystem
 #region Protected API
 
         /// <summary>
+        /// Whether the object supports the "Use" interaction type.<br/>
+        /// If true, the <see cref="UseStart"/> and <see cref="UseStop"/> methods should be overridden.
+        /// </summary>
+        protected virtual bool SupportsUseInteraction => false;
+
+        /// <summary>
         /// Override to add custom interactions to the object.
         /// </summary>
         /// <param name="supportedInteractions">The list to add interactions to.</param>
@@ -147,6 +158,23 @@ namespace Player.InteractionSystem
         protected virtual void Awake()
         {
             FindSupportedInteractions();
+        }
+
+
+        protected virtual void Update()
+        {
+            if (_isDragging)
+            {
+                transform.position = InteractionInvoker.Instance.GrabTargetPosition;
+                
+                if (Input.GetMouseButton(1))
+                {
+                    Vector3 eulerAngles = transform.eulerAngles;
+                    eulerAngles.x += Input.GetAxis("Mouse Y") * 2;
+                    eulerAngles.y += Input.GetAxis("Mouse X") * 2;
+                    transform.eulerAngles = eulerAngles;
+                }
+            }
         }
 
 #endregion

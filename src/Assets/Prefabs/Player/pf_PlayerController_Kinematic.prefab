@@ -408,10 +408,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1afd4f775f6c4a20b5d54f2bc702a648, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doDrawDebugLine: 1
   _head: {fileID: 4665439326672968814}
-  interactKey: 102
+  _doDrawDebugLine: 1
   _interactionDistance: 2
+  _grabDistanceMin: 1
+  _grabDistanceMax: 3
+  interactKey: 102
+  _grabDistanceSpeed: 0.5
 --- !u!1 &4665439325798902107
 GameObject:
   m_ObjectHideFlags: 0
