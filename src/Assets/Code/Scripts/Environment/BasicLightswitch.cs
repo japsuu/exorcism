@@ -7,7 +7,7 @@ namespace Environment
     /// <summary>
     /// Interactable lightswitch that can be turned on/off.
     /// </summary>
-    public class BasicLightswitch : InteractableBehaviour
+    public class BasicLightswitch : WorldObject
     {
         [SerializeField]
         private Light _light;
@@ -24,23 +24,34 @@ namespace Environment
         private bool _isLightOn;
 
 
-        private void Awake()
+        protected override bool SupportsUseInteraction => true;
+
+
+        protected override void Awake()
         {
+            base.Awake();
+            
             _isLightOn = _light.enabled;
         }
 
 
-        public override string GetInteractDescription() =>
-            _isLightOn
-                ? "Turn <color=red>off</color> the lightswitch."
-                : "Turn <color=green>on</color> the lightswitch.";
+        public override string GetDescription()
+        {
+            return base.GetDescription()?.Replace("{status}", _isLightOn ? "<color=red>off</color>" : "<color=green>on</color>");
+        }
 
 
-        public override void Interact()
+        protected override void UseStart()
         {
             _isLightOn = !_isLightOn;
             _light.enabled = _isLightOn;
             
+            AnimateButton();
+        }
+
+
+        private void AnimateButton()
+        {
             float targetY = _isLightOn ? _buttonTransform.localPosition.y - _buttonPressDistance : _buttonTransform.localPosition.y + _buttonPressDistance;
             _buttonTransform.DOLocalMoveY(targetY, _buttonPressDuration);
         }

@@ -1,39 +1,68 @@
-﻿using UnityEngine;
+﻿using JetBrains.Annotations;
+using UnityEngine;
 
 namespace Player.InteractionSystem
 {
     /// <summary>
-    /// Inherit to make the object interactable.
-    /// Requires some collider to be detected by <see cref="InteractionInvoker"/>
+    /// Inherit to make the object interactable.<br/><br/>
+    /// 
+    /// When an interactable object is looked at, a menu is shown to select the interaction type.<br/>
+    /// Whatever option is selected is how you interact with this item when you press the "interact" key.
+    ///
+    /// <remarks>
+    /// Requires a collider to be detected by <see cref="InteractionInvoker"/>.
+    /// </remarks>
     /// </summary>
     public interface IInteractable
     {
-        public float HoldInteractionLengthSeconds { get; }
+        /// <summary>
+        /// Returns the name of the object.
+        /// Displayed in the interaction menu.
+        ///
+        /// <example>
+        /// "Briefcase"
+        /// </example>
+        /// </summary>
+        [CanBeNull]
+        public string GetName();
 
 
         /// <summary>
-        /// Can this object be interacted with right now by the defined interactor?
+        /// Returns an optional description for the object.
+        /// Displayed in the interaction menu.
+        ///
+        /// <example>
+        /// "Use to view contents."
+        /// </example>
         /// </summary>
-        /// <returns></returns>
-        public bool CanBeInteractedWith();
-
-
-        /// <summary>
-        /// Returns the text that will be shown on the UI when this object can be interacted with.
-        /// </summary>
-        /// <returns></returns>
-        public string GetInteractDescription();
-    
-        
-        /// <summary>
-        /// Called when an interaction is requested.
-        /// </summary>
-        public void Interact();
+        [CanBeNull]
+        public string GetDescription();
 
 
         /// <summary>
         /// Returns the bounds of the object in world space.
         /// </summary>
         public Bounds GetWorldBounds();
+
+        
+        /// <summary>
+        /// Returns the human-readable names for the supported interactions for this object.
+        /// Each entry will be shown as a selectable entry in the interaction menu.
+        /// </summary>
+        public string[] GetSupportedInteractionNames();
+        
+        
+        /// <summary>
+        /// Called when the interaction key is pressed.
+        /// For every <see cref="InteractionStart"/> call there will be a matching <see cref="InteractionStop"/> call.
+        /// </summary>
+        /// <param name="index">The index of interaction requested (see <see cref="GetSupportedInteractionNames"/>).</param>
+        public void InteractionStart(int index);
+        
+        
+        /// <summary>
+        /// Called when the interaction key is released.
+        /// </summary>
+        public void InteractionStop();
     }
 }

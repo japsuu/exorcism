@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Player.InteractionSystem
 {
@@ -22,14 +23,34 @@ namespace Player.InteractionSystem
         protected override Vector3 RaycastPosition => _head.position;
         protected override Vector3 RaycastDirection => _head.forward;
         protected override float InteractionDistance => _interactionDistance;
-        protected override bool WasInteractionKeyPressedDownThisFrame => Input.GetKeyDown(interactKey);
-        protected override bool WasInteractionKeyLiftedUpThisFrame => Input.GetKeyUp(interactKey);
-        protected override bool IsInteractionKeyHeldCurrently => Input.GetKey(interactKey);
-        protected override bool ShouldAllowInteraction => true;
+        protected override bool IsInteractKeyPressed => Input.GetKeyDown(interactKey);
+        protected override bool IsInteractKeyReleased => Input.GetKeyUp(interactKey);
+        protected override bool IsInteractionEnabled => true;
+        protected override int InteractionIndexDelta => Input.mouseScrollDelta.y < 0 ? 1 : Input.mouseScrollDelta.y > 0 ? -1 : 0;
 
-        protected override void HandleInteraction(IInteractable interactable)
+        protected override void HandleInteractionStart(IInteractable interactable, int index)
         {
-            interactable.Interact();
+            try
+            {
+                interactable.InteractionStart(index);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error while starting interaction with {interactable}: {e}");
+            }
+        }
+
+
+        protected override void HandleInteractionStop(IInteractable interactable)
+        {
+            try
+            {
+                interactable.InteractionStop();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error while stopping interaction with {interactable}: {e}");
+            }
         }
     }
 }

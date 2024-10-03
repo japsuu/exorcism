@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using Tools;
 using UnityEngine;
+using Debug = System.Diagnostics.Debug;
 
 namespace Player.InteractionSystem
 {
@@ -27,194 +28,157 @@ namespace Player.InteractionSystem
             }
         }
 
-        public readonly struct InteractingEventArgs
-        {
-            public readonly IInteractable Interactable;
-
-
-            public InteractingEventArgs(IInteractable interactable)
-            {
-                Interactable = interactable;
-            }
-        }
-
         /// <summary>
         /// Called when the player looks at a new object.
         /// </summary>
         public static event Action<LookAtChangedEventArgs> TargetChanged;
-        
-        /// <summary>
-        /// Called after the player has interacted with an object.
-        /// </summary>
-        public static event Action<InteractingEventArgs> Interacted;
-        
-        /// <summary>
-        /// The progress of the interaction.
-        /// Range: 0-1.
-        /// </summary>
-        public static float InteractionProgress;
 
-        [SerializeField]
-        private bool _doDrawDebugLine;
+        /// <summary>
+        /// Called when the currently selected interaction index changes.
+        /// </summary>
+        public static event Action<int> SelectedInteractionIndexChanged;
 
         protected abstract Vector3 RaycastPosition { get; }
         protected abstract Vector3 RaycastDirection { get; }
         protected abstract float InteractionDistance { get; }
-        protected abstract bool WasInteractionKeyPressedDownThisFrame { get; }
-        protected abstract bool WasInteractionKeyLiftedUpThisFrame { get; }
-        protected abstract bool IsInteractionKeyHeldCurrently { get; }
-        protected abstract bool ShouldAllowInteraction { get; }
+        protected abstract bool IsInteractKeyPressed { get; }
+        protected abstract bool IsInteractKeyReleased { get; }
+        protected abstract bool IsInteractionEnabled { get; }
+        protected abstract int InteractionIndexDelta { get; }
+        
+        
+        [SerializeField]
+        private bool _doDrawDebugLine;
+        private int _selectedInteractionIndex;
 
 
         /// <summary>
-        /// Called when the player interacts with an object.
+        /// Called when the player starts interacting with an object.
         /// </summary>
         /// <param name="interactable">The interactable object.</param>
-        protected abstract void HandleInteraction(IInteractable interactable);
+        /// <param name="index">The index of the interaction type.</param>
+        protected abstract void HandleInteractionStart(IInteractable interactable, int index);
+
+
+        /// <summary>
+        /// Called when the player stops interacting with an object.
+        /// </summary>
+        /// <param name="interactable">The interactable object.</param>
+        protected abstract void HandleInteractionStop(IInteractable interactable);
 
         
-        private IInteractable _lastFrameTargetedInteractable;
-        private float _interactionKeyHeldForSeconds;
-        private bool _waitForInteractKeyRelease;
+        [CanBeNull] private IInteractable _previousLookAtTarget;    // The object that the player was looking at last frame.
+        [CanBeNull] private IInteractable _interactionTarget;       // The object that the player is currently interacting with.
         private readonly RaycastHit[] _results = new RaycastHit[16];
 
 
         protected virtual void Update()
         {
-            if (!ShouldAllowInteraction)
+            // Check if interaction has been disabled.
+            // This could happen at any time.
+            if (!IsInteractionEnabled)
             {
-                ResetInteractionTarget();
+                ResetTargets();
                 return;
             }
 
-            CheckInteractionKeyRelease();
+            // Check if the player is currently interacting with an object.
+            // If so, do not allow any other interactions.
+            if (_interactionTarget != null)
+            {
+                if (IsInteractKeyReleased)
+                    StopInteraction();
+                else
+                    return;
+            }
 
-            // Raycast if hit an object.
+            // The player is not interacting with an object.
+            // Raycast if we are looking at one.
             int count = Physics.RaycastNonAlloc(RaycastPosition, RaycastDirection, _results, InteractionDistance);
-
             for (int i = 0; i < count; i++)
             {
                 GameObject hit = _results[i].transform.gameObject;
 
-                if (!hit.TryGetComponent(out IInteractable currentlyTargetedInteractable))
+                if (!hit.TryGetComponent(out IInteractable currentLookAtTarget))
                     continue;
                 
-                HandleTargetedInteractable(currentlyTargetedInteractable);
-                return;
-            }
-
-            // No hit, reset the targeted object.
-            ResetInteractionTarget();
-        }
-
-
-        private void HandleTargetedInteractable(IInteractable currentlyTargetedInteractable)
-        {
-            if (IsInteractionKeyHeldCurrently)
-                _interactionKeyHeldForSeconds += Time.deltaTime;
-            InteractionProgress = 0;
+                // Looking at an interactable object.
+                // Check if it's different from the last frame.
+                if (currentLookAtTarget != _previousLookAtTarget)
+                    ChangeLookAtTarget(currentLookAtTarget);
             
-            // Handle changed target.
-            if (currentlyTargetedInteractable != _lastFrameTargetedInteractable)
-                HandleChangedTarget(currentlyTargetedInteractable);
+                UpdateInteractionIndex(currentLookAtTarget);
 
-            // If we need to wait for the interaction key to be lifted, return.
-            // This can happen if we just interacted with some other object, and a new one is detected before the key is lifted.
-            // Without this, we would instantly interact with the new object.
-            if (_waitForInteractKeyRelease)
-                return;
-
-            // Return if the object doesn't currently accept interactions.
-            if (!currentlyTargetedInteractable.CanBeInteractedWith())
-                return;
-
-            // Check for instant interaction.
-            if (TryInteractInstant(currentlyTargetedInteractable))
-                return;
-
-            // Interact with interaction time.
-            TryInteractDelayed(currentlyTargetedInteractable);
-        }
-
-
-        private void HandleChangedTarget(IInteractable currentlyTargetedInteractable)
-        {
-            TargetChanged?.Invoke(new LookAtChangedEventArgs(_lastFrameTargetedInteractable, currentlyTargetedInteractable));
+                if (IsInteractKeyPressed)
+                    StartInteraction(currentLookAtTarget, _selectedInteractionIndex);
                 
-            // Disallow all interactions until the interaction key is lifted, to avoid instant interaction. See below.
-            if (IsInteractionKeyHeldCurrently)
-                _waitForInteractKeyRelease = true;
-
-            _interactionKeyHeldForSeconds = 0;
-            _lastFrameTargetedInteractable = currentlyTargetedInteractable;
-        }
-
-
-        private bool TryInteractInstant(IInteractable currentlyTargetedInteractable)
-        {
-            if (currentlyTargetedInteractable.HoldInteractionLengthSeconds != 0 || !WasInteractionKeyPressedDownThisFrame)
-                return false;
-            
-            InvokeInteraction(currentlyTargetedInteractable);
-            
-            return true;
-        }
-
-
-        private void TryInteractDelayed(IInteractable currentlyTargetedInteractable)
-        {
-            if (!IsInteractionKeyHeldCurrently)
-            {
-                _interactionKeyHeldForSeconds = 0;
                 return;
             }
-            
-            if (_interactionKeyHeldForSeconds >= currentlyTargetedInteractable.HoldInteractionLengthSeconds)
-                InvokeInteraction(currentlyTargetedInteractable);
 
-            float interactionProgress = _interactionKeyHeldForSeconds / currentlyTargetedInteractable.HoldInteractionLengthSeconds;
-            InteractionProgress = Mathf.Min(1f, interactionProgress);
+            // No hit, reset the targets.
+            ResetTargets();
         }
 
 
-        private void InvokeInteraction(IInteractable interactable)
+        private void UpdateInteractionIndex(IInteractable currentLookAtTarget)
         {
-            HandleInteraction(interactable);
-            Interacted?.Invoke(new InteractingEventArgs(interactable));
-
-            // Disallow further interactions until the interaction key is lifted.
-            _waitForInteractKeyRelease = true;
-            
-            // Reset interaction time.
-            _interactionKeyHeldForSeconds = 0;
-        }
-
-
-        protected virtual void ResetInteractionTarget()
-        {
-            _interactionKeyHeldForSeconds = 0;
-
-            CheckInteractionKeyRelease();
-
-            if (_lastFrameTargetedInteractable == null)
+            if (InteractionIndexDelta == 0)
                 return;
-
-            // Notify UI that we stopped looking at an object.
-            TargetChanged?.Invoke(new LookAtChangedEventArgs(_lastFrameTargetedInteractable, null));
-
-            _lastFrameTargetedInteractable = null;
+            
+            int optionCount = currentLookAtTarget.GetSupportedInteractionNames().Length;
+            if (optionCount == 0)
+                return;
+            
+            int newIndex = _selectedInteractionIndex + InteractionIndexDelta;
+            if (newIndex < 0)
+                newIndex = optionCount - 1;
+            else if (newIndex >= optionCount)
+                newIndex = 0;
+            
+            ChangeSelectedInteractionIndex(newIndex);
         }
 
 
-        private void CheckInteractionKeyRelease()
+        private void ChangeSelectedInteractionIndex(int newIndex)
         {
-            // If we do not allow interacting multiple times with a single "hold" of key,
-            // reset interaction allowance when the interaction key is lifted.
-            if (!_waitForInteractKeyRelease)
-                return;
+            _selectedInteractionIndex = newIndex;
+            SelectedInteractionIndexChanged?.Invoke(newIndex);
+        }
 
-            if (WasInteractionKeyLiftedUpThisFrame)
-                _waitForInteractKeyRelease = false;
+
+        private void StartInteraction(IInteractable interactable, int index)
+        {
+            Debug.Assert(_interactionTarget == null, nameof(_interactionTarget) + " == null");
+            Debug.Assert(interactable != null, nameof(interactable) + " != null");
+            _interactionTarget = interactable;
+            HandleInteractionStart(_interactionTarget, index);
+        }
+
+
+        private void StopInteraction()
+        {
+            Debug.Assert(_interactionTarget != null, nameof(_interactionTarget) + " != null");
+            HandleInteractionStop(_interactionTarget);
+            _interactionTarget = null;
+        }
+
+
+        private void ResetTargets()
+        {
+            if (_previousLookAtTarget != null)
+                ChangeLookAtTarget(null);
+            
+            if (_interactionTarget != null)
+                StopInteraction();
+        }
+
+
+        private void ChangeLookAtTarget([CanBeNull] IInteractable currentlyTargetedInteractable)
+        {
+            TargetChanged?.Invoke(new LookAtChangedEventArgs(_previousLookAtTarget, currentlyTargetedInteractable));
+            
+            _previousLookAtTarget = currentlyTargetedInteractable;
+            ChangeSelectedInteractionIndex(0);
         }
 
 
