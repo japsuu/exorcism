@@ -32,8 +32,12 @@ namespace Player.InteractionSystem
         [Header("Grabbing Settings")]
         [SerializeField] private float _grabDistanceMin = 1f;
         [SerializeField] private float _grabDistanceMax = 3f;
+        [Range(0f, 1f)]
+        [SerializeField] private float _grabDistanceLerpSpeed = 0.5f;
         
         private int _selectedInteractionIndex;
+        // Grab distance without lerping.
+        private float _targetGrabDistance = 1f;
         private float _grabDistance = 1f;
 
         private Vector3 RaycastPosition => _head.position;
@@ -49,7 +53,7 @@ namespace Player.InteractionSystem
         /// <summary>
         /// The position the player is currently looking at, with the current grab distance applied.
         /// </summary>
-        public Vector3 GrabTargetPosition => RaycastPosition + RaycastDirection * _grabDistance;
+        public Vector3 GrabTargetPosition => RaycastPosition + RaycastDirection * _targetGrabDistance;
 
 
         /// <summary>
@@ -116,7 +120,7 @@ namespace Player.InteractionSystem
                 {
                     StartInteraction(currentLookAtTarget, _selectedInteractionIndex);
                     float distanceToInteractable = Vector3.Distance(RaycastPosition, hit.transform.position);
-                    _grabDistance = Mathf.Clamp(distanceToInteractable, _grabDistanceMin, _grabDistanceMax);
+                    _targetGrabDistance = Mathf.Clamp(distanceToInteractable, _grabDistanceMin, _grabDistanceMax);
                 }
                 
                 return;
@@ -129,8 +133,11 @@ namespace Player.InteractionSystem
 
         private void UpdateGrabDistance()
         {
-            _grabDistance += GrabDistanceDelta;
-            _grabDistance = Mathf.Clamp(_grabDistance, _grabDistanceMin, _grabDistanceMax);
+            _targetGrabDistance += GrabDistanceDelta;
+            _targetGrabDistance = Mathf.Clamp(_targetGrabDistance, _grabDistanceMin, _grabDistanceMax);
+            
+            // Hacky, but it works.
+            _grabDistance = Mathf.Lerp(_grabDistance, _targetGrabDistance, _grabDistanceLerpSpeed);
         }
 
 
