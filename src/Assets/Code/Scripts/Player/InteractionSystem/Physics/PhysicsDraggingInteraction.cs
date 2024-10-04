@@ -36,8 +36,8 @@ namespace Player.InteractionSystem
                 _rb,
                 InteractionInvoker.Instance.GrabTargetPosition,
                 transform.rotation,
-                InteractionInvoker.Instance.GrabForce,
-                InteractionInvoker.Instance.GrabDamping);
+                InteractionInvoker.Instance.GrabStrength,
+                InteractionInvoker.Instance.GrabMaxForce);
         }
 
 
@@ -96,10 +96,10 @@ namespace Player.InteractionSystem
         /// <param name="rb">The rigidbody to attach to the target.</param>
         /// <param name="attachmentPosition"></param>
         /// <param name="attachmentRotation"></param>
-        /// <param name="force"></param>
-        /// <param name="damping"></param>
+        /// <param name="springStrength"></param>
+        /// <param name="maxForce"></param>
         /// <returns></returns>
-        private static Transform CreatePositionTarget(Rigidbody rb, Vector3 attachmentPosition, Quaternion attachmentRotation, float force, float damping)
+        private static Transform CreatePositionTarget(Rigidbody rb, Vector3 attachmentPosition, Quaternion attachmentRotation, float springStrength, float maxForce)
         {
             GameObject target = new("Attachment Point");
             //target.hideFlags = HideFlags.HideInHierarchy;
@@ -108,28 +108,38 @@ namespace Player.InteractionSystem
 
             Rigidbody targetRb = target.AddComponent<Rigidbody>();
             targetRb.isKinematic = true;
+            
+            // The damping needs to be high enough to prevent the object from bouncing around,
+            // but low enough to not make the object feel sluggish.
+            // Damping of 50 is good for mass 5.
+            // Damping of 200 is good for mass 50.
+            // Damping of 400 is good for mass 100.
+            // Damping of 800 is good for mass 200.
+            // We can calculate the damping based on the mass, by lerping between 50 and 800.
+            float springDamping = Mathf.Lerp(50, 800, rb.mass / 200f);
 
             ConfigurableJoint joint = target.AddComponent<ConfigurableJoint>();
             joint.autoConfigureConnectedAnchor = false;
             joint.connectedBody = rb;
             joint.configuredInWorldSpace = true;
-            joint.xDrive = CreateJointDrive(force, damping);
-            joint.yDrive = CreateJointDrive(force, damping);
-            joint.zDrive = CreateJointDrive(force, damping);
-            joint.slerpDrive = CreateJointDrive(force, damping);
+            joint.xDrive = CreateJointDrive(springStrength, springDamping, maxForce);
+            joint.yDrive = CreateJointDrive(springStrength, springDamping, maxForce);
+            joint.zDrive = CreateJointDrive(springStrength, springDamping, maxForce);
+            joint.slerpDrive = CreateJointDrive(springStrength, springDamping, maxForce);
             joint.rotationDriveMode = RotationDriveMode.Slerp;
 
             return target.transform;
         }
 
 
-        private static JointDrive CreateJointDrive(float force, float damping)
+        private static JointDrive CreateJointDrive(float springStrength, float springDamping, float maxForce)
         {
             JointDrive drive = new()
             {
-                positionSpring = force,
-                positionDamper = damping,
-                maximumForce = Mathf.Infinity
+                maximumForce = maxForce,
+                positionDamper = springDamping,
+                positionSpring = springStrength,
+                useAcceleration = false
             };
             return drive;
         }
