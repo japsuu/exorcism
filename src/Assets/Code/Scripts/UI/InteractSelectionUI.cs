@@ -47,8 +47,7 @@ namespace UI
         private IInteractable _targetedInteractable;
         private InteractMenuEntry[] _availableMenuEntries;
         private int _selectedInteractionIndex;
-        private Vector3 _previousBoundsCenter;
-        private Vector3 _previousBoundsExtents;
+        private Bounds _previousBounds;
 
 
         private void Awake()
@@ -174,6 +173,7 @@ namespace UI
             bool hasTarget = args.NewLookAt != null;
             
             _targetedInteractable = args.NewLookAt;
+            _previousBounds = new Bounds();
             
             UpdateInteractionMenuEntries(_targetedInteractable?.GetSupportedInteractions());
             
@@ -194,6 +194,8 @@ namespace UI
                 return;
 
             Bounds bounds = _targetedInteractable.GetWorldBounds();
+            if (_previousBounds.size == Vector3.zero)
+                _previousBounds = bounds;
 
             /*// Try to get the interpolated position of the rigidbody if it exists.
             Rigidbody rb = _targetedInteractable.GetRigidbody();
@@ -206,8 +208,8 @@ namespace UI
             float interpolationFactor = (Time.time - Time.fixedTime) / Time.fixedDeltaTime;
 
             // Since the bounds are from a simulated rigidbody, we need to interpolate the bounds to get the correct values.
-            Vector3 c = Vector3.Lerp(_previousBoundsCenter, bounds.center, interpolationFactor);
-            Vector3 e = Vector3.Lerp(_previousBoundsExtents, bounds.extents, interpolationFactor);
+            Vector3 c = Vector3.Lerp(_previousBounds.center, bounds.center, interpolationFactor);
+            Vector3 e = Vector3.Lerp(_previousBounds.extents, bounds.extents, interpolationFactor);
 
             Vector3[] worldCorners = {
                 new( c.x + e.x, c.y + e.y, c.z + e.z ),
@@ -255,8 +257,7 @@ namespace UI
             _selectionBounds.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, localBottomRight.x - localTopLeft.x);
             _selectionBounds.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, localTopLeft.y - localBottomRight.y);
             
-            _previousBoundsCenter = c;
-            _previousBoundsExtents = e;
+            _previousBounds = bounds;
         }
     }
 }
