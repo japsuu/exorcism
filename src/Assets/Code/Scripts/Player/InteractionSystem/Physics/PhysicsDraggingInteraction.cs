@@ -13,7 +13,7 @@ namespace Player.InteractionSystem
         /// <summary>
         /// How far the object can be from the target position before the dragging is canceled.
         /// </summary>
-        [SerializeField] private float _maxDistanceToTarget = 5;
+        [SerializeField] private float _maxDistanceToTarget = 3.1f;
 
         private Transform _positionTarget;
         private Rigidbody _rb;

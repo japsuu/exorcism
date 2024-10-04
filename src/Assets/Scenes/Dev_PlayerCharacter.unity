@@ -187,13 +187,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8477209824837406591, guid: 7a7c867af48cbe94e8b98d3d976e431f,
         type: 3}
+      propertyPath: _grabDistanceMax
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8477209824837406591, guid: 7a7c867af48cbe94e8b98d3d976e431f,
+        type: 3}
       propertyPath: _grabDistanceSpeed
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 8477209824837406591, guid: 7a7c867af48cbe94e8b98d3d976e431f,
         type: 3}
       propertyPath: _grabDistanceLerpSpeed
-      value: 0.5
+      value: 0.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1673,7 +1678,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _force: 600
   _damping: 6
-  _maxDistanceToTarget: 5
+  _maxDistanceToTarget: 3.1
 --- !u!1 &1915592832
 GameObject:
   m_ObjectHideFlags: 0

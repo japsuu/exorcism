@@ -410,16 +410,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _head: {fileID: 4665439326672968814}
-  _doDrawDebugLine: 1
+  _doDebugDraw: 1
   _interactableLayers:
     serializedVersion: 2
     m_Bits: 256
   _interactionDistance: 2
   _grabDistanceMin: 1
-  _grabDistanceMax: 3
-  _grabDistanceLerpSpeed: 0
+  _grabDistanceMax: 2.5
+  _grabDistanceLerpSpeed: 0.2
   interactKey: 102
-  _grabDistanceSpeed: 0.5
+  _grabDistanceSpeed: 0.2
 --- !u!1 &4665439325798902107
 GameObject:
   m_ObjectHideFlags: 0

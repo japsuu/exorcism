@@ -35,7 +35,7 @@ namespace Player.InteractionSystem
         
         [Header("Grabbing Settings")]
         [SerializeField] private float _grabDistanceMin = 1f;
-        [SerializeField] private float _grabDistanceMax = 3f;
+        [SerializeField] private float _grabDistanceMax = 2.5f;
         [Range(0f, 1f)]
         [SerializeField] private float _grabDistanceLerpSpeed = 0.2f;
         

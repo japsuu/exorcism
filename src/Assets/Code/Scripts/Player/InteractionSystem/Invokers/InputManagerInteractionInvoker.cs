@@ -14,7 +14,7 @@ namespace Player.InteractionSystem
         private KeyCode interactKey = KeyCode.F;
         
         [SerializeField]
-        private float _grabDistanceSpeed = 0.5f;
+        private float _grabDistanceSpeed = 0.2f;
 
 
         protected override bool IsInteractKeyPressed => Input.GetKeyDown(interactKey);
