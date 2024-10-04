@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Player.InteractionSystem
 {
@@ -9,6 +10,9 @@ namespace Player.InteractionSystem
     /// </summary>
     public abstract class StaticInteractableObject : InteractableObject
     {
+        public override Rigidbody GetRigidbody() => null;
+
+
 #region Protected API
         
         /// <summary>

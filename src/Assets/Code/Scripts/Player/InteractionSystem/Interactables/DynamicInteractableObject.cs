@@ -9,10 +9,22 @@ namespace Player.InteractionSystem
     /// The object can be grabbed and moved around in the world, and can be rotated while holding the right mouse button.<br/>
     /// Doesn't necessarily require any further interactions to be defined.
     /// </summary>
+    [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(PhysicsDraggingInteraction))]
     public class DynamicInteractableObject : InteractableObject
     {
+        private Rigidbody _rb;
         private PhysicsDraggingInteraction _draggingInteraction;
+
+        public override Rigidbody GetRigidbody() => _rb;
+
+
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            _rb = GetComponent<Rigidbody>();
+        }
 
 
         protected override void RegisterInteractions(List<IInteraction> supportedInteractions)

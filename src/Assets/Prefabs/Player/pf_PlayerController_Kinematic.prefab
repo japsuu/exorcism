@@ -380,6 +380,7 @@ MonoBehaviour:
   JumpPostGroundingGraceTime: 0.1
   Gravity: {x: 0, y: -30, z: 0}
   movementDirectionTransform: {fileID: 4665439325798902106}
+  _interpolate: 1
 --- !u!114 &4665439325745049151
 MonoBehaviour:
   m_ObjectHideFlags: 0

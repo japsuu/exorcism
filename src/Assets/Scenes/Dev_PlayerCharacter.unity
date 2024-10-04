@@ -185,21 +185,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: pf_PlayerController_Kinematic
       objectReference: {fileID: 0}
-    - target: {fileID: 8477209824837406591, guid: 7a7c867af48cbe94e8b98d3d976e431f,
-        type: 3}
-      propertyPath: _grabDistanceMax
-      value: 2.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8477209824837406591, guid: 7a7c867af48cbe94e8b98d3d976e431f,
-        type: 3}
-      propertyPath: _grabDistanceSpeed
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8477209824837406591, guid: 7a7c867af48cbe94e8b98d3d976e431f,
-        type: 3}
-      propertyPath: _grabDistanceLerpSpeed
-      value: 0.2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2034,8 +2019,8 @@ SceneRoots:
   - {fileID: 344344952}
   - {fileID: 1829524797}
   - {fileID: 1816383794}
-  - {fileID: 212432280}
   - {fileID: 6794011484875318267}
+  - {fileID: 212432280}
   - {fileID: 722801057}
   - {fileID: 1162483443}
   - {fileID: 1849276530}

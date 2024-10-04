@@ -1,4 +1,5 @@
-﻿using KinematicCharacterController;
+﻿using System;
+using KinematicCharacterController;
 using UnityEngine;
 
 namespace Player
@@ -63,6 +64,9 @@ namespace Player
         [SerializeField]
         private Transform movementDirectionTransform;
 
+        [SerializeField]
+        private bool _interpolate = true;
+
         private Vector3 _movementInput;
         private float _targetXAxis;
         private bool _sprinting;
@@ -78,6 +82,12 @@ namespace Player
         {
             _playerController = GetComponent<PlayerController>();
             Motor.CharacterController = this;
+        }
+
+
+        private void Start()
+        {
+            KinematicCharacterSystem.Settings.Interpolate = _interpolate;
         }
 
 

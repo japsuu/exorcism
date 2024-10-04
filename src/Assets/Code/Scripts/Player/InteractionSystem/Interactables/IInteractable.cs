@@ -15,9 +15,6 @@ namespace Player.InteractionSystem
     /// </summary>
     public interface IInteractable
     {
-        public GameObject GameObject { get; }
-        
-        
         /// <summary>
         /// Returns the name of the object.
         /// Displayed in the interaction menu.
@@ -46,6 +43,13 @@ namespace Player.InteractionSystem
         /// Returns the bounds of the object in world space.
         /// </summary>
         public Bounds GetWorldBounds();
+
+
+        /// <summary>
+        /// Returns the rigidbody of the object if it has one.
+        /// </summary>
+        [CanBeNull]
+        public Rigidbody GetRigidbody();
 
         
         /// <summary>
