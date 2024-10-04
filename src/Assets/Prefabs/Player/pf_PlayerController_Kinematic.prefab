@@ -396,6 +396,7 @@ MonoBehaviour:
   cameraPitch: {fileID: 4665439326426395600}
   rotationSensitivity: 2
   cameraVerticalLimit: 88
+  _disableCameraRotationOnRightMouse: 1
 --- !u!114 &8477209824837406591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -410,9 +411,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _head: {fileID: 4665439326672968814}
   _doDrawDebugLine: 1
+  _interactableLayers:
+    serializedVersion: 2
+    m_Bits: 256
   _interactionDistance: 2
   _grabDistanceMin: 1
   _grabDistanceMax: 3
+  _grabDistanceLerpSpeed: 0
   interactKey: 102
   _grabDistanceSpeed: 0.5
 --- !u!1 &4665439325798902107

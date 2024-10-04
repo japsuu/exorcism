@@ -11,9 +11,9 @@ namespace Player.InteractionSystem
         private readonly RaycastHit _hit;
         
         /// <summary>
-        /// The current distance between the raycast source and the interactable object's center.
+        /// The current distance between the raycast source and the object's center.
         /// </summary>
-        public float DistanceToCenter(IInteractable target) => Vector3.Distance(_raycastSourcePos, target.GameObject.transform.position);
+        public float DistanceTo(GameObject target) => Vector3.Distance(_raycastSourcePos, target.transform.position);
         
         /// <summary>
         /// True, if the player is looking at the specified object and is close enough to initiate an interaction.<br/>

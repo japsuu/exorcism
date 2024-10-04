@@ -24,11 +24,11 @@ namespace Player.InteractionSystem
         [Header("Raycasting")]
         [Tooltip("Used to raycast forward from.")]
         [SerializeField] private Transform _head;
-        [SerializeField] private bool _doDrawDebugLine;
+        [SerializeField] private bool _doDebugDraw = true;
 
-        [Tooltip("The layer that interactable objects should be on to be interactable.")]
+        [Tooltip("The layers that interactable objects should be on to be interactable.")]
         [SerializeField]
-        private LayerMask _interactableLayer;
+        private LayerMask _interactableLayers;
         
         [Header("Interaction Settings")]
         [SerializeField] private float _interactionDistance = 2f;
@@ -62,7 +62,7 @@ namespace Player.InteractionSystem
         /// </summary>
         public Vector3 GrabTargetPosition => RaycastPosition + RaycastDirection * _grabDistance;
         
-        public LayerMask InteractableLayer => _interactableLayer;
+        public LayerMask InteractableLayers => _interactableLayers;
 
 
         /// <summary>
@@ -81,6 +81,7 @@ namespace Player.InteractionSystem
 
         protected virtual void Update()
         {
+            print(_grabDistance);
             // Check if interaction has been disabled.
             // This could happen at any time.
             if (!IsInteractionEnabled)
@@ -135,7 +136,7 @@ namespace Player.InteractionSystem
 
         private IInteractable TryGetTargetedInteractable(out RaycastHit hit)
         {
-            int count = Physics.RaycastNonAlloc(RaycastPosition, RaycastDirection, _results, _interactionDistance, _interactableLayer);
+            int count = Physics.RaycastNonAlloc(RaycastPosition, RaycastDirection, _results, _interactionDistance, _interactableLayers);
             
             if (count == MAX_RAYCAST_HITS)
                 Debug.LogWarning("Max raycast hits reached. Some objects may not be interactable.");
@@ -237,12 +238,14 @@ namespace Player.InteractionSystem
 
         private void OnDrawGizmosSelected()
         {
-            if (!_doDrawDebugLine)
+            if (!_doDebugDraw)
                 return;
 
             Gizmos.color = Color.green;
-
             GizmosExtensions.DrawArrow(RaycastPosition, RaycastPosition + RaycastDirection * _interactionDistance);
+            
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(GrabTargetPosition, 0.1f);
         }
     }
 }

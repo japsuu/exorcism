@@ -28,8 +28,9 @@ namespace Player.InteractionSystem
 
         protected virtual void Awake()
         {
-            if (gameObject.layer != InteractionInvoker.Instance.InteractableLayer)
-                Debug.LogWarning($"Interactable object \"{name}\" is not on the \"Interactable\" layer. This may cause issues with interaction detection.");
+            LayerMask layerMask = InteractionInvoker.Instance.InteractableLayers;
+            if (layerMask != (layerMask | (1 << gameObject.layer)))
+                Debug.LogWarning($"Interactable object \"{name}\" is not on the interactable layer defined in InteractionInvoker. This may cause issues with interaction detection.");
         }
     }
 }

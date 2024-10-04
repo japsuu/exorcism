@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cameras;
 using JetBrains.Annotations;
 using Player.InteractionSystem;
 using TMPro;
@@ -44,15 +45,12 @@ namespace UI
 
         [CanBeNull]
         private IInteractable _targetedInteractable;
-        private Camera _camera;
         private InteractMenuEntry[] _availableMenuEntries;
         private int _selectedInteractionIndex;
 
 
         private void Awake()
         {
-            _camera = Camera.main;
-            
             InitializeInteractionMenuEntries();
             
             SetVisible(false);
@@ -210,7 +208,7 @@ namespace UI
                 new( c.x - e.x, c.y - e.y, c.z - e.z ),
             };
 
-            IEnumerable<Vector3> screenCorners = worldCorners.Select(corner => _camera.WorldToScreenPoint(corner));
+            IEnumerable<Vector3> screenCorners = worldCorners.Select(corner => MainCameraController.Instance.Camera.WorldToScreenPoint(corner));
             float maxX = float.MinValue;
             float minX = float.MaxValue;
             float maxY = float.MinValue;

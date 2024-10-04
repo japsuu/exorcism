@@ -9,51 +9,22 @@ namespace Player.InteractionSystem
     /// The object can be grabbed and moved around in the world, and can be rotated while holding the right mouse button.<br/>
     /// Doesn't necessarily require any further interactions to be defined.
     /// </summary>
+    [RequireComponent(typeof(PhysicsDraggingInteraction))]
     public class DynamicInteractableObject : InteractableObject
     {
-        private bool _isDragging;
-
-
-        public void GrabStart()
-        {
-            _isDragging = true;
-        }
-
-
-        public void GrabStop()
-        {
-            _isDragging = false;
-        }
+        private PhysicsDraggingInteraction _draggingInteraction;
 
 
         protected override void RegisterInteractions(List<IInteraction> supportedInteractions)
         {
-            supportedInteractions.Add(new EventInteraction("Grab", GrabStart, GrabStop, ShouldStop));
-        }
-
-
-        protected override void Update()
-        {
-            base.Update();
-            
-            if (_isDragging)
+            _draggingInteraction = GetComponent<PhysicsDraggingInteraction>();
+            if (_draggingInteraction == null)
             {
-                transform.position = InteractionInvoker.Instance.GrabTargetPosition;
-                
-                if (Input.GetMouseButton(1))
-                {
-                    Vector3 eulerAngles = transform.eulerAngles;
-                    eulerAngles.x += Input.GetAxis("Mouse Y") * 2;
-                    eulerAngles.y += Input.GetAxis("Mouse X") * 2;
-                    transform.eulerAngles = eulerAngles;
-                }
+                Debug.LogWarning($"No {nameof(PhysicsDraggingInteraction)} assigned to {nameof(DynamicInteractableObject)}. This object will not be draggable.", gameObject);
+                return;
             }
-        }
-        
-        
-        protected virtual bool ShouldStop(RaycastDataArgs args)
-        {
-            return args.DistanceToCenter(this) > 5;
+            
+            supportedInteractions.Add(_draggingInteraction);
         }
     }
 }
