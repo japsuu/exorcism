@@ -42,13 +42,13 @@ namespace Player.InteractionSystem
             
             _positionTarget.position = InteractionInvoker.Instance.GrabTargetPosition;
             
-            if (Input.GetMouseButton(1))    // TODO. Move to GrabTargetRotation in InteractionInvoker?
-            {
-                Vector3 eulerAngles = transform.eulerAngles;
-                eulerAngles.x += Input.GetAxis("Mouse Y") * 2;
-                eulerAngles.y += Input.GetAxis("Mouse X") * 2;
-                transform.eulerAngles = eulerAngles;
-            }
+            if (!Input.GetMouseButton(1))
+                return;
+            
+            // TODO. Move to GrabTargetRotation in InteractionInvoker?
+            Quaternion rotation = _positionTarget.rotation;
+            rotation *= Quaternion.Euler(Input.GetAxis("Mouse Y") * 2, Input.GetAxis("Mouse X") * 2, 0);
+            _positionTarget.rotation = rotation;
         }
 
 
