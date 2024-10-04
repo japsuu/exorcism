@@ -102,7 +102,7 @@ namespace Player.InteractionSystem
                 _currentInteraction.OnUpdate();
                 UpdateGrabDistance();
                 
-                RaycastDataArgs args = new(targetedInteractable, RaycastPosition, hit);
+                RaycastDataArgs args = new(targetedInteractable, RaycastPosition, RaycastDirection, hit);
                 if (IsInteractKeyReleased || _currentInteraction.ShouldStop(args))
                     StopInteraction();
                 else

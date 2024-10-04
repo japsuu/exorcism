@@ -15,13 +15,38 @@ namespace Player.InteractionSystem
         /// </summary>
         [SerializeField] private float _maxDistanceToTarget = 3.1f;
 
+        /// <summary>
+        /// How large of an angle difference is allowed between the view direction and the direction to the object.
+        /// This is used to cancel interaction objects that are too heavy to follow the view direction
+        /// if the player is trying to rotate too quickly.
+        /// </summary>
+        [SerializeField] private float _maxAngleDifference = 55f;
+
         private Transform _positionTarget;
         private Rigidbody _rb;
         private bool _requestThrow;
 
 
         public string GetName() => "Drag";
-        public bool ShouldStop(RaycastDataArgs args) => args.DistanceTo(gameObject) > _maxDistanceToTarget || _requestThrow;
+        
+        
+        public bool ShouldStop(RaycastDataArgs args)
+        {
+            if (args.DistanceTo(gameObject) > _maxDistanceToTarget)
+                return true;
+            
+            if (_requestThrow)
+                return true;
+            
+            // Calculate the direction from raycast position to the object.
+            Vector3 directionToObject = transform.position - args.RaycastSourcePos;
+            // Calculate the angle between the view direction and the direction to the object.
+            float angleDifference = Vector3.Angle(args.RaycastSourceDirection, directionToObject);
+            if (angleDifference > _maxAngleDifference)
+                return true;
+            
+            return false;
+        }
 
 
         public void OnStart()
