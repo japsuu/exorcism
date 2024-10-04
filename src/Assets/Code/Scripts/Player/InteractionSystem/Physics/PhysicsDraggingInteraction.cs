@@ -31,7 +31,7 @@ namespace Player.InteractionSystem
                 OnStop();
             }
             
-            _positionTarget = CreatePositionTarget(_rb, InteractionInvoker.Instance.GrabTargetPosition, _force, _damping);
+            _positionTarget = CreatePositionTarget(_rb, InteractionInvoker.Instance.GrabTargetPosition, transform.rotation, _force, _damping);
         }
 
 
@@ -73,14 +73,16 @@ namespace Player.InteractionSystem
         /// </summary>
         /// <param name="rb">The rigidbody to attach to the target.</param>
         /// <param name="attachmentPosition"></param>
+        /// <param name="attachmentRotation"></param>
         /// <param name="force"></param>
         /// <param name="damping"></param>
         /// <returns></returns>
-        private static Transform CreatePositionTarget(Rigidbody rb, Vector3 attachmentPosition, float force, float damping)
+        private static Transform CreatePositionTarget(Rigidbody rb, Vector3 attachmentPosition, Quaternion attachmentRotation, float force, float damping)
         {
             GameObject target = new("Attachment Point");
             //target.hideFlags = HideFlags.HideInHierarchy;
             target.transform.position = attachmentPosition;
+            target.transform.rotation = attachmentRotation;
 
             Rigidbody targetRb = target.AddComponent<Rigidbody>();
             targetRb.isKinematic = true;
