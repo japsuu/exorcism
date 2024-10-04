@@ -25,6 +25,10 @@ namespace Player.InteractionSystem
         [Tooltip("Used to raycast forward from.")]
         [SerializeField] private Transform _head;
         [SerializeField] private bool _doDrawDebugLine;
+
+        [Tooltip("The layer that interactable objects should be on to be interactable.")]
+        [SerializeField]
+        private LayerMask _interactableLayer;
         
         [Header("Interaction Settings")]
         [SerializeField] private float _interactionDistance = 2f;
@@ -57,6 +61,8 @@ namespace Player.InteractionSystem
         /// The position the player is currently looking at, with the current grab distance applied.
         /// </summary>
         public Vector3 GrabTargetPosition => RaycastPosition + RaycastDirection * _grabDistance;
+        
+        public LayerMask InteractableLayer => _interactableLayer;
 
 
         /// <summary>
@@ -129,7 +135,7 @@ namespace Player.InteractionSystem
 
         private IInteractable TryGetTargetedInteractable(out RaycastHit hit)
         {
-            int count = Physics.RaycastNonAlloc(RaycastPosition, RaycastDirection, _results, _interactionDistance);
+            int count = Physics.RaycastNonAlloc(RaycastPosition, RaycastDirection, _results, _interactionDistance, _interactableLayer);
             
             if (count == MAX_RAYCAST_HITS)
                 Debug.LogWarning("Max raycast hits reached. Some objects may not be interactable.");

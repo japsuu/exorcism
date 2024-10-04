@@ -212,7 +212,7 @@ GameObject:
   - component: {fileID: 1898604558274190614}
   - component: {fileID: 5339128934470395675}
   - component: {fileID: 1009537539555120048}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: pf_Button_Latching_Interactable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -250,9 +250,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interactTriggerCollider: {fileID: 1009537539555120048}
+  _interactableLayer:
+    serializedVersion: 2
+    m_Bits: 256
   _name: Light Switch
   _description: Turn {status} the light
-  _supportedInteractionNamesCache: []
   _toggleTarget: {fileID: 8331920197431187835}
   _buttonTransform: {fileID: 503650502524117906}
   _buttonPressDistance: 0.03

@@ -24,5 +24,12 @@ namespace Player.InteractionSystem
 
         public abstract void InteractionStart(int index);
         public abstract void InteractionStop();
+        
+
+        protected virtual void Awake()
+        {
+            if (gameObject.layer != InteractionInvoker.Instance.InteractableLayer)
+                Debug.LogWarning($"Interactable object \"{name}\" is not on the \"Interactable\" layer. This may cause issues with interaction detection.");
+        }
     }
 }

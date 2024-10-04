@@ -90,8 +90,10 @@ namespace Player.InteractionSystem
 
 #region Protected API
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             FindSupportedInteractions();
         }
 
