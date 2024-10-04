@@ -35,12 +35,9 @@ namespace Player.InteractionSystem
         protected abstract void UseStop();
         
         
-        protected virtual bool ShouldStop(InteractionDataArgs args)
+        protected virtual bool ShouldStop(RaycastDataArgs args)
         {
-            if (!args.IsLookingAtObject)
-                return true;
-            
-            return false;
+            return !args.IsLookingAtInteractable(this);
         }
 
 #endregion

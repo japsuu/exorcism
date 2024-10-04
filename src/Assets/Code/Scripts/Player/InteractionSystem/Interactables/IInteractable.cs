@@ -15,6 +15,9 @@ namespace Player.InteractionSystem
     /// </summary>
     public interface IInteractable
     {
+        public GameObject GameObject { get; }
+        
+        
         /// <summary>
         /// Returns the name of the object.
         /// Displayed in the interaction menu.
@@ -46,23 +49,9 @@ namespace Player.InteractionSystem
 
         
         /// <summary>
-        /// Returns the human-readable names for the supported interactions for this object.
+        /// Returns all the available interactions for this object.
         /// Each entry will be shown as a selectable entry in the interaction menu.
         /// </summary>
-        public string[] GetSupportedInteractionNames();
-        
-        
-        /// <summary>
-        /// Called when the interaction key is pressed.
-        /// For every <see cref="InteractionStart"/> call there will be a matching <see cref="InteractionStop"/> call.
-        /// </summary>
-        /// <param name="index">The index of interaction requested (see <see cref="GetSupportedInteractionNames"/>).</param>
-        public void InteractionStart(int index);
-        
-        
-        /// <summary>
-        /// Called when the interaction key is released.
-        /// </summary>
-        public void InteractionStop();
+        public IInteraction[] GetSupportedInteractions();
     }
 }

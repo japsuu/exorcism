@@ -51,12 +51,9 @@ namespace Player.InteractionSystem
         }
         
         
-        protected virtual bool ShouldStop(InteractionDataArgs args)
+        protected virtual bool ShouldStop(RaycastDataArgs args)
         {
-            if (args.DistanceToInteractable > 5)
-                return true;
-            
-            return false;
+            return args.DistanceToCenter(this) > 5;
         }
     }
 }

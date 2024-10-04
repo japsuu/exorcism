@@ -8,9 +8,9 @@ namespace Player.InteractionSystem
         private readonly string _name;
         [CanBeNull] private readonly Action _onStart;
         [CanBeNull] private readonly Action _onStop;
-        private readonly Func<InteractionDataArgs, bool> _shouldStop;
+        private readonly Func<RaycastDataArgs, bool> _shouldStop;
         
-        public EventInteraction(string name, [CanBeNull] Action onStart, [CanBeNull] Action onStop, Func<InteractionDataArgs, bool> shouldStop = null)
+        public EventInteraction(string name, [CanBeNull] Action onStart, [CanBeNull] Action onStop, Func<RaycastDataArgs, bool> shouldStop = null)
         {
             _name = name;
             _onStart = onStart;
@@ -20,7 +20,7 @@ namespace Player.InteractionSystem
         
         public string GetName() => _name;
 
-        public bool ShouldStop(InteractionDataArgs args) => _shouldStop(args);
+        public bool ShouldStop(RaycastDataArgs args) => _shouldStop(args);
 
         public void OnStart() => _onStart?.Invoke();
 

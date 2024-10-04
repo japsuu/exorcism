@@ -18,11 +18,12 @@
         /// Set to true when the player stops looking at the object.
         /// </example>
         /// </summary>
-        public bool ShouldStop(InteractionDataArgs args);
+        public bool ShouldStop(RaycastDataArgs args);
         
         /// <summary>
         /// Called when the interaction is started.<br/>
         /// Called when the player presses the interaction key.
+        /// For every <see cref="OnStart"/> call there will be a matching <see cref="OnStop"/> call.
         /// </summary>
         public void OnStart();
         

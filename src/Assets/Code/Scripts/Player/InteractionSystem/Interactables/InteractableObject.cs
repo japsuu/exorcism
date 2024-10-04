@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
-using Tools;
 using UnityEngine;
 
 namespace Player.InteractionSystem
@@ -17,8 +16,6 @@ namespace Player.InteractionSystem
         [CanBeNull]
         private IInteraction _currentInteraction;
         private IInteraction[] _supportedInteractions;
-        [SerializeField, ReadOnly]
-        private string[] _supportedInteractionNamesCache;
 
         
         /// <summary>
@@ -86,7 +83,7 @@ namespace Player.InteractionSystem
         }
         
         
-        public sealed override string[] GetSupportedInteractionNames() => _supportedInteractionNamesCache;
+        public sealed override IInteraction[] GetSupportedInteractions() => _supportedInteractions;
 
 #endregion
 
@@ -119,11 +116,6 @@ namespace Player.InteractionSystem
             RegisterInteractions(supportedInteractions);
 
             _supportedInteractions = supportedInteractions.ToArray();
-            
-            // Cache names
-            _supportedInteractionNamesCache = new string[_supportedInteractions.Length];
-            for (int i = 0; i < _supportedInteractions.Length; i++)
-                _supportedInteractionNamesCache[i] = _supportedInteractions[i].GetName();
             
             if (_supportedInteractions.Length == 0)
                 Debug.LogWarning($"No interactions found for object {gameObject}.");

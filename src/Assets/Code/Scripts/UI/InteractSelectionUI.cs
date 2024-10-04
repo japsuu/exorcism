@@ -119,9 +119,9 @@ namespace UI
         }
 
 
-        private void UpdateInteractionMenuEntries([CanBeNull] string[] names)
+        private void UpdateInteractionMenuEntries([CanBeNull] IInteraction[] supportedInteractions)
         {
-            if (names == null)
+            if (supportedInteractions == null)
             {
                 foreach (InteractMenuEntry entry in _availableMenuEntries)
                 {
@@ -130,7 +130,7 @@ namespace UI
                 return;
             }
             
-            if (names.Length > MENU_ENTRY_POOL_SIZE)
+            if (supportedInteractions.Length > MENU_ENTRY_POOL_SIZE)
             {
                 Debug.LogWarning($"Too many interaction options for object {_targetedInteractable?.GetName()}. Only {MENU_ENTRY_POOL_SIZE} will be shown.");
             }
@@ -139,10 +139,10 @@ namespace UI
             {
                 InteractMenuEntry entry = _availableMenuEntries[i];
                 entry.Clear();
-                if (i < names.Length)
+                if (i < supportedInteractions.Length)
                 {
                     entry.gameObject.SetActive(true);
-                    entry.SetText(i, names[i]);
+                    entry.SetText(i, supportedInteractions[i].GetName());
                 }
                 else
                 {
@@ -175,7 +175,7 @@ namespace UI
             
             _targetedInteractable = args.NewLookAt;
             
-            UpdateInteractionMenuEntries(_targetedInteractable?.GetSupportedInteractionNames());
+            UpdateInteractionMenuEntries(_targetedInteractable?.GetSupportedInteractions());
             
             SetVisible(hasTarget);
             UpdateSelectionBounds();

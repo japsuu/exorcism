@@ -35,10 +35,13 @@ namespace Player.InteractionSystem
         [Range(0f, 1f)]
         [SerializeField] private float _grabDistanceLerpSpeed = 0.5f;
         
+        private const int MAX_RAYCAST_HITS = 16;
+        private readonly RaycastHit[] _results = new RaycastHit[MAX_RAYCAST_HITS];
         private int _selectedInteractionIndex;
-        // Grab distance without lerping.
-        private float _targetGrabDistance = 1f;
-        private float _grabDistance = 1f;
+        private float _targetGrabDistance = 1f; // Grab distance without lerping.
+        private float _grabDistance = 1f;       // Current grab distance.
+        [CanBeNull] private IInteractable _previousLookAtTarget;    // The object that the player was looking at last frame.
+        [CanBeNull] private IInteraction _currentInteraction;       // The currently performed interaction.
 
         private Vector3 RaycastPosition => _head.position;
         private Vector3 RaycastDirection => _head.forward;
@@ -59,21 +62,15 @@ namespace Player.InteractionSystem
         /// <summary>
         /// Called when the player starts interacting with an object.
         /// </summary>
-        /// <param name="interactable">The interactable object.</param>
-        /// <param name="index">The index of the interaction type.</param>
-        protected abstract void HandleInteractionStart(IInteractable interactable, int index);
+        /// <param name="interaction">The interaction to start.</param>
+        protected abstract void HandleInteractionStart(IInteraction interaction);
 
 
         /// <summary>
         /// Called when the player stops interacting with an object.
         /// </summary>
-        /// <param name="interactable">The interactable object.</param>
-        protected abstract void HandleInteractionStop(IInteractable interactable);
-
-        
-        [CanBeNull] private IInteractable _previousLookAtTarget;    // The object that the player was looking at last frame.
-        [CanBeNull] private IInteractable _interactionTarget;       // The object that the player is currently interacting with.
-        private readonly RaycastHit[] _results = new RaycastHit[16];
+        /// <param name="interaction">The interaction to stop.</param>
+        protected abstract void HandleInteractionStop(IInteraction interaction);
 
 
         protected virtual void Update()
@@ -86,11 +83,17 @@ namespace Player.InteractionSystem
                 return;
             }
 
+            // Raycast if we are looking at an interactable object.
+            IInteractable targetedInteractable = TryGetTargetedInteractable(out RaycastHit hit);
+
             // Check if the player is currently interacting with an object.
             // If so, do not allow any other interactions.
-            if (_interactionTarget != null)
+            if (_currentInteraction != null)
             {
-                if (IsInteractKeyReleased)
+                _currentInteraction.OnUpdate();
+                
+                RaycastDataArgs args = new(targetedInteractable, RaycastPosition, hit);
+                if (IsInteractKeyReleased || _currentInteraction.ShouldStop(args))
                     StopInteraction();
                 else
                 {
@@ -98,27 +101,20 @@ namespace Player.InteractionSystem
                     return;
                 }
             }
-
+            
             // The player is not interacting with an object.
-            // Raycast if we are looking at one.
-            int count = Physics.RaycastNonAlloc(RaycastPosition, RaycastDirection, _results, _interactionDistance);
-            for (int i = 0; i < count; i++)
+            if (targetedInteractable != null)
             {
-                GameObject hit = _results[i].transform.gameObject;
-
-                if (!hit.TryGetComponent(out IInteractable currentLookAtTarget))
-                    continue;
-                
                 // Looking at an interactable object.
                 // Check if it's different from the last frame.
-                if (currentLookAtTarget != _previousLookAtTarget)
-                    ChangeLookAtTarget(currentLookAtTarget);
+                if (targetedInteractable != _previousLookAtTarget)
+                    ChangeLookAtTarget(targetedInteractable);
             
-                UpdateInteractionIndex(currentLookAtTarget);
+                UpdateInteractionIndex(targetedInteractable);
 
                 if (IsInteractKeyPressed)
                 {
-                    StartInteraction(currentLookAtTarget, _selectedInteractionIndex);
+                    StartInteraction(targetedInteractable, _selectedInteractionIndex);
                     float distanceToInteractable = Vector3.Distance(RaycastPosition, hit.transform.position);
                     _targetGrabDistance = Mathf.Clamp(distanceToInteractable, _grabDistanceMin, _grabDistanceMax);
                 }
@@ -128,6 +124,36 @@ namespace Player.InteractionSystem
 
             // No hit, reset the targets.
             ResetTargets();
+        }
+
+
+        private IInteractable TryGetTargetedInteractable(out RaycastHit hit)
+        {
+            int count = Physics.RaycastNonAlloc(RaycastPosition, RaycastDirection, _results, _interactionDistance);
+            
+            if (count == MAX_RAYCAST_HITS)
+                Debug.LogWarning("Max raycast hits reached. Some objects may not be interactable.");
+            
+            // Small alloc, because the _results array is not filled up to MAX_RAYCAST_HITS.
+            // We cannot sort it directly since it might contain old data. 
+            RaycastHit[] sortedResults = new RaycastHit[count];
+            Array.Copy(_results, sortedResults, count);
+            
+            // Sort the results by distance.
+            Array.Sort(sortedResults, (a, b) => a.distance.CompareTo(b.distance));
+            
+            for (int i = 0; i < count; i++)
+            {
+                hit = sortedResults[i];
+                GameObject go = hit.transform.gameObject;
+                if (!go.TryGetComponent(out IInteractable currentLookAtTarget))
+                    continue;
+                
+                return currentLookAtTarget;
+            }
+
+            hit = default;
+            return null;
         }
 
 
@@ -146,7 +172,7 @@ namespace Player.InteractionSystem
             if (InteractionIndexDelta == 0)
                 return;
             
-            int optionCount = currentLookAtTarget.GetSupportedInteractionNames().Length;
+            int optionCount = currentLookAtTarget.GetSupportedInteractions().Length;
             if (optionCount == 0)
                 return;
             
@@ -169,18 +195,18 @@ namespace Player.InteractionSystem
 
         private void StartInteraction(IInteractable interactable, int index)
         {
-            Debug.Assert(_interactionTarget == null, nameof(_interactionTarget) + " == null");
+            Debug.Assert(_currentInteraction == null, nameof(_currentInteraction) + " == null");
             Debug.Assert(interactable != null, nameof(interactable) + " != null");
-            _interactionTarget = interactable;
-            HandleInteractionStart(_interactionTarget, index);
+            _currentInteraction = interactable.GetSupportedInteractions()[index];
+            HandleInteractionStart(_currentInteraction);
         }
 
 
         private void StopInteraction()
         {
-            Debug.Assert(_interactionTarget != null, nameof(_interactionTarget) + " != null");
-            HandleInteractionStop(_interactionTarget);
-            _interactionTarget = null;
+            Debug.Assert(_currentInteraction != null, nameof(_currentInteraction) + " != null");
+            HandleInteractionStop(_currentInteraction);
+            _currentInteraction = null;
         }
 
 
@@ -189,7 +215,7 @@ namespace Player.InteractionSystem
             if (_previousLookAtTarget != null)
                 ChangeLookAtTarget(null);
             
-            if (_interactionTarget != null)
+            if (_currentInteraction != null)
                 StopInteraction();
         }
 

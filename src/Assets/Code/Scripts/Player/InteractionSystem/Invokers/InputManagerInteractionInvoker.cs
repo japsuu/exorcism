@@ -24,28 +24,28 @@ namespace Player.InteractionSystem
         protected override float GrabDistanceDelta => Input.mouseScrollDelta.y * _grabDistanceSpeed;
 
 
-        protected override void HandleInteractionStart(IInteractable interactable, int index)
+        protected override void HandleInteractionStart(IInteraction interaction)
         {
             try
             {
-                interactable.InteractionStart(index);
+                interaction.OnStart();
             }
             catch (Exception e)
             {
-                Debug.LogError($"Error while starting interaction with {interactable}: {e}");
+                Debug.LogError($"Error while starting interaction '{interaction.GetName()}': {e}");
             }
         }
 
 
-        protected override void HandleInteractionStop(IInteractable interactable)
+        protected override void HandleInteractionStop(IInteraction interaction)
         {
             try
             {
-                interactable.InteractionStop();
+                interaction.OnStop();
             }
             catch (Exception e)
             {
-                Debug.LogError($"Error while stopping interaction with {interactable}: {e}");
+                Debug.LogError($"Error while stopping interaction '{interaction.GetName()}': {e}");
             }
         }
     }

@@ -14,11 +14,13 @@ namespace Player.InteractionSystem
         [SerializeField]
         private Collider _interactTriggerCollider;
 
+        public GameObject GameObject => gameObject;
+
         public Bounds GetWorldBounds() => _interactTriggerCollider.bounds;
-        
+
         public abstract string GetName();
         public abstract string GetDescription();
-        public abstract string[] GetSupportedInteractionNames();
+        public abstract IInteraction[] GetSupportedInteractions();
 
         public abstract void InteractionStart(int index);
         public abstract void InteractionStop();
