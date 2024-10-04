@@ -38,6 +38,8 @@ namespace Player.InteractionSystem
         [SerializeField] private float _grabDistanceMax = 2.5f;
         [Range(0f, 1f)]
         [SerializeField] private float _grabDistanceLerpSpeed = 0.2f;
+        [SerializeField] private float _grabForce = 1200;
+        [SerializeField] private float _grabDamping = 50;
         
         private const int MAX_RAYCAST_HITS = 16;
         private readonly RaycastHit[] _results = new RaycastHit[MAX_RAYCAST_HITS];
@@ -61,8 +63,9 @@ namespace Player.InteractionSystem
         /// The position the player is currently looking at, with the current grab distance applied.
         /// </summary>
         public Vector3 GrabTargetPosition => RaycastPosition + RaycastDirection * _grabDistance;
-        
         public LayerMask InteractableLayers => _interactableLayers;
+        public float GrabForce => _grabForce;
+        public float GrabDamping => _grabDamping;
 
 
         /// <summary>

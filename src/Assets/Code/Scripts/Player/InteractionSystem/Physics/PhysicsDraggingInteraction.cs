@@ -8,8 +8,6 @@ namespace Player.InteractionSystem
     [RequireComponent(typeof(Rigidbody))]
     public sealed class PhysicsDraggingInteraction : MonoBehaviour, IInteraction
     {
-        [SerializeField] private float _force = 600;    // TODO: Should these exist in InteractionInvoker?
-        [SerializeField] private float _damping = 6;
         /// <summary>
         /// How far the object can be from the target position before the dragging is canceled.
         /// </summary>
@@ -31,7 +29,12 @@ namespace Player.InteractionSystem
                 OnStop();
             }
             
-            _positionTarget = CreatePositionTarget(_rb, InteractionInvoker.Instance.GrabTargetPosition, transform.rotation, _force, _damping);
+            _positionTarget = CreatePositionTarget(
+                _rb,
+                InteractionInvoker.Instance.GrabTargetPosition,
+                transform.rotation,
+                InteractionInvoker.Instance.GrabForce,
+                InteractionInvoker.Instance.GrabDamping);
         }
 
 
