@@ -37,7 +37,7 @@ namespace Player.InteractionSystem
         [SerializeField] private float _grabDistanceMin = 1f;
         [SerializeField] private float _grabDistanceMax = 3f;
         [Range(0f, 1f)]
-        [SerializeField] private float _grabDistanceLerpSpeed = 0.5f;
+        [SerializeField] private float _grabDistanceLerpSpeed = 0.2f;
         
         private const int MAX_RAYCAST_HITS = 16;
         private readonly RaycastHit[] _results = new RaycastHit[MAX_RAYCAST_HITS];
@@ -81,7 +81,6 @@ namespace Player.InteractionSystem
 
         protected virtual void Update()
         {
-            print(_grabDistance);
             // Check if interaction has been disabled.
             // This could happen at any time.
             if (!IsInteractionEnabled)
@@ -98,15 +97,13 @@ namespace Player.InteractionSystem
             if (_currentInteraction != null)
             {
                 _currentInteraction.OnUpdate();
+                UpdateGrabDistance();
                 
                 RaycastDataArgs args = new(targetedInteractable, RaycastPosition, hit);
                 if (IsInteractKeyReleased || _currentInteraction.ShouldStop(args))
                     StopInteraction();
                 else
-                {
-                    UpdateGrabDistance();
                     return;
-                }
             }
             
             // The player is not interacting with an object.
@@ -124,6 +121,7 @@ namespace Player.InteractionSystem
                     StartInteraction(targetedInteractable, _selectedInteractionIndex);
                     float distanceToInteractable = Vector3.Distance(RaycastPosition, hit.transform.position);
                     _targetGrabDistance = Mathf.Clamp(distanceToInteractable, _grabDistanceMin, _grabDistanceMax);
+                    _grabDistance = _targetGrabDistance;
                 }
                 
                 return;
