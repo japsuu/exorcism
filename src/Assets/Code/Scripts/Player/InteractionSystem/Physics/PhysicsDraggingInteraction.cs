@@ -4,6 +4,8 @@ namespace Player.InteractionSystem
 {
     /// <summary>
     /// Drag a rigidbody with the mouse using a spring joint.
+    ///
+    /// Can be rotated while holding the right mouse button, and thrown by clicking the left mouse button.
     /// </summary>
     [RequireComponent(typeof(Rigidbody))]
     public sealed class PhysicsDraggingInteraction : MonoBehaviour, IInteraction
@@ -15,10 +17,11 @@ namespace Player.InteractionSystem
 
         private Transform _positionTarget;
         private Rigidbody _rb;
+        private bool _requestThrow;
 
 
         public string GetName() => "Drag";
-        public bool ShouldStop(RaycastDataArgs args) => args.DistanceTo(gameObject) > _maxDistanceToTarget;
+        public bool ShouldStop(RaycastDataArgs args) => args.DistanceTo(gameObject) > _maxDistanceToTarget || _requestThrow;
 
 
         public void OnStart()
@@ -44,14 +47,19 @@ namespace Player.InteractionSystem
                 return;
             
             _positionTarget.position = InteractionInvoker.Instance.GrabTargetPosition;
-            
-            if (!Input.GetMouseButton(1))
-                return;
-            
-            // TODO. Move to GrabTargetRotation in InteractionInvoker?
-            Quaternion rotation = _positionTarget.rotation;
-            rotation *= Quaternion.Euler(Input.GetAxis("Mouse Y") * 2, Input.GetAxis("Mouse X") * 2, 0);
-            _positionTarget.rotation = rotation;
+
+            if (Input.GetMouseButton(1))
+            {
+                // TODO. Move to GrabTargetRotation in InteractionInvoker?
+                Quaternion rotation = _positionTarget.rotation;
+                rotation *= Quaternion.Euler(Input.GetAxis("Mouse Y") * 2, Input.GetAxis("Mouse X") * 2, 0);
+                _positionTarget.rotation = rotation;
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                _requestThrow = true;
+            }
         }
 
 
@@ -61,6 +69,17 @@ namespace Player.InteractionSystem
                 Debug.LogWarning("Position target does not exist. This should not happen.", this);
             
             Destroy(_positionTarget.gameObject);
+            
+            if (_requestThrow)
+                ThrowSelf();
+        }
+
+
+        private void ThrowSelf()
+        {
+            Vector3 forceDirection = transform.position - InteractionInvoker.Instance.RaycastPosition;
+            _rb.AddForce(forceDirection * InteractionInvoker.Instance.ThrowForce, ForceMode.Impulse);
+            _requestThrow = false;
         }
 
 
@@ -113,6 +132,16 @@ namespace Player.InteractionSystem
                 maximumForce = Mathf.Infinity
             };
             return drive;
+        }
+
+
+        private void OnDrawGizmos()
+        {
+            if (_positionTarget == null)
+                return;
+            
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, _positionTarget.position);
         }
     }
 }

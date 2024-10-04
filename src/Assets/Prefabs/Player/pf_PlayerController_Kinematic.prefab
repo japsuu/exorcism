@@ -419,6 +419,9 @@ MonoBehaviour:
   _grabDistanceMin: 1
   _grabDistanceMax: 2.5
   _grabDistanceLerpSpeed: 0.2
+  _grabForce: 1200
+  _grabDamping: 50
+  _throwForce: 50
   interactKey: 102
   _grabDistanceSpeed: 0.2
 --- !u!1 &4665439325798902107

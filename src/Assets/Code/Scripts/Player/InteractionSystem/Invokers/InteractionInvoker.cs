@@ -40,6 +40,7 @@ namespace Player.InteractionSystem
         [SerializeField] private float _grabDistanceLerpSpeed = 0.2f;
         [SerializeField] private float _grabForce = 1200;
         [SerializeField] private float _grabDamping = 50;
+        [SerializeField] private float _throwForce = 20;
         
         private const int MAX_RAYCAST_HITS = 16;
         private readonly RaycastHit[] _results = new RaycastHit[MAX_RAYCAST_HITS];
@@ -48,9 +49,6 @@ namespace Player.InteractionSystem
         private float _grabDistance = 1f;       // Current grab distance.
         [CanBeNull] private IInteractable _previousLookAtTarget;    // The object that the player was looking at last frame.
         [CanBeNull] private IInteraction _currentInteraction;       // The currently performed interaction.
-
-        private Vector3 RaycastPosition => _head.position;
-        private Vector3 RaycastDirection => _head.forward;
         
         protected abstract bool IsInteractKeyPressed { get; }
         protected abstract bool IsInteractKeyReleased { get; }
@@ -58,7 +56,8 @@ namespace Player.InteractionSystem
         protected abstract int InteractionIndexDelta { get; }
         protected abstract float GrabDistanceDelta { get; }
         
-        
+        public Vector3 RaycastPosition => _head.position;
+        public Vector3 RaycastDirection => _head.forward;
         /// <summary>
         /// The position the player is currently looking at, with the current grab distance applied.
         /// </summary>
@@ -66,6 +65,7 @@ namespace Player.InteractionSystem
         public LayerMask InteractableLayers => _interactableLayers;
         public float GrabForce => _grabForce;
         public float GrabDamping => _grabDamping;
+        public float ThrowForce => _throwForce;
 
 
         /// <summary>
