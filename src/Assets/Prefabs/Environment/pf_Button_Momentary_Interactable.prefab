@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8f3ead9ec16e7f34d9a66ca8289667d3, type: 2}
+  - {fileID: 2100000, guid: aee8afe89de11824782be8901d212909, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -250,9 +250,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interactTriggerCollider: {fileID: 1009537539555120048}
-  _interactableLayer:
-    serializedVersion: 2
-    m_Bits: 256
   _name: Light Switch
   _description: Turn on the light
   _toggleTarget: {fileID: 8331920197431187835}
@@ -341,7 +338,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: aee8afe89de11824782be8901d212909, type: 2}
+  - {fileID: 2100000, guid: 8f3ead9ec16e7f34d9a66ca8289667d3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
