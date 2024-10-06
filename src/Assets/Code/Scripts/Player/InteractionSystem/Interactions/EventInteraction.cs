@@ -22,13 +22,13 @@ namespace Player.InteractionSystem
 
         public bool ShouldStop(RaycastDataArgs args) => _shouldStop(args);
 
-        public void OnStart() => _onStart?.Invoke();
+        public void OnStartInteraction() => _onStart?.Invoke();
 
-        public void OnUpdate()
+        public void OnUpdateInteraction()
         {
             // Do nothing
         }
         
-        public void OnStop() => _onStop?.Invoke();
+        public void OnStopInteraction() => _onStop?.Invoke();
     }
 }

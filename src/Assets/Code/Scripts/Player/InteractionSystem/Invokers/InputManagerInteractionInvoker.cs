@@ -28,7 +28,7 @@ namespace Player.InteractionSystem
         {
             try
             {
-                interaction.OnStart();
+                interaction.OnStartInteraction();
             }
             catch (Exception e)
             {
@@ -41,7 +41,7 @@ namespace Player.InteractionSystem
         {
             try
             {
-                interaction.OnStop();
+                interaction.OnStopInteraction();
             }
             catch (Exception e)
             {

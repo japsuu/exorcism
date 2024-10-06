@@ -99,7 +99,7 @@ namespace Player.InteractionSystem
             // If so, do not allow any other interactions.
             if (_currentInteraction != null)
             {
-                _currentInteraction.OnUpdate();
+                _currentInteraction.OnUpdateInteraction();
                 UpdateGrabDistance();
                 
                 RaycastDataArgs args = new(targetedInteractable, RaycastPosition, RaycastDirection, hit);

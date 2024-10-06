@@ -54,11 +54,11 @@ namespace Player.InteractionSystem
             if (_currentInteraction != null)
             {
                 Debug.LogWarning("Interaction already in progress. Stopping current interaction.");
-                _currentInteraction.OnStop();
+                _currentInteraction.OnStopInteraction();
             }
             
             _currentInteraction = _supportedInteractions[index];
-            _currentInteraction!.OnStart();
+            _currentInteraction!.OnStartInteraction();
         }
 
 
@@ -78,7 +78,7 @@ namespace Player.InteractionSystem
                 return;
             }
             
-            _currentInteraction.OnStop();
+            _currentInteraction.OnStopInteraction();
             _currentInteraction = null;
         }
         
