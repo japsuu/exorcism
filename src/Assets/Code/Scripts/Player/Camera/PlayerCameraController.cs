@@ -20,6 +20,9 @@ namespace Player
         [SerializeField]
         private float cameraVerticalLimit = 88f;
 
+        [SerializeField]
+        private bool _disableCameraRotationOnRightMouse = true;
+
         //WARN: Increments over 360 degrees. Might cause floating point issues at some point?
         private float _targetHorizontalAxis;
         private float _targetVerticalAxis;
@@ -55,6 +58,9 @@ namespace Player
 
         private void SetInputs(InputData inputData)
         {
+            if (_disableCameraRotationOnRightMouse && inputData.IsHoldingSecondaryMouseButton)
+                return;
+            
             _targetHorizontalAxis += inputData.MouseInput.x * rotationSensitivity;
             _targetVerticalAxis += -inputData.MouseInput.y * rotationSensitivity;
 

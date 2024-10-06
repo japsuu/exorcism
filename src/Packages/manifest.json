@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.jimmycushnie.command-terminal-plus": "https://github.com/JimmyCushnie/Command-Terminal-Plus.git",
+    "com.unity.2d.sprite": "1.0.0",
     "com.unity.cinemachine": "2.10.1",
     "com.unity.ide.rider": "3.0.31",
     "com.unity.ide.visualstudio": "2.0.22",

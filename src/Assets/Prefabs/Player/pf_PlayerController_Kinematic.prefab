@@ -245,6 +245,7 @@ GameObject:
   - component: {fileID: 3767846396090009933}
   - component: {fileID: 4665439325745049145}
   - component: {fileID: 4665439325745049151}
+  - component: {fileID: 8477209824837406591}
   m_Layer: 8
   m_Name: pf_PlayerController_Kinematic
   m_TagString: Untagged
@@ -325,7 +326,7 @@ MonoBehaviour:
   MaxStableDenivelationAngle: 180
   InteractiveRigidbodyHandling: 1
   RigidbodyInteractionType: 2
-  SimulatedCharacterMass: 1
+  SimulatedCharacterMass: 80
   PreserveAttachedRigidbodyMomentum: 1
   HasPlanarConstraint: 0
   PlanarConstraintAxis: {x: 0, y: 0, z: 1}
@@ -346,7 +347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a368242056cb0ba44ae3020afd63132c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputs:
+  _inputData:
     NormalizedMovementInput: {x: 0, y: 0, z: 0}
     MouseInput: {x: 0, y: 0}
     IsJumping: 0
@@ -366,19 +367,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Motor: {fileID: 4665439325745049144}
-  WalkSpeedMax: 5
-  SprintSpeedMax: 10
+  WalkSpeedMax: 4
+  SprintSpeedMax: 6
   MovementSharpness: 15
-  AirSpeedMax: 7
+  AirSpeedMax: 4
   AirMovementSharpness: 30
   AirDrag: 0.3
   AllowJumpingWhenSliding: 1
-  JumpForce: 10
+  JumpForce: 7
   JumpScalableForwardSpeed: 0
   JumpPreGroundingGraceTime: 0.1
   JumpPostGroundingGraceTime: 0.1
   Gravity: {x: 0, y: -30, z: 0}
   movementDirectionTransform: {fileID: 4665439325798902106}
+  _interpolate: 1
 --- !u!114 &4665439325745049151
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -395,6 +397,33 @@ MonoBehaviour:
   cameraPitch: {fileID: 4665439326426395600}
   rotationSensitivity: 2
   cameraVerticalLimit: 88
+  _disableCameraRotationOnRightMouse: 1
+--- !u!114 &8477209824837406591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4665439325745049149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1afd4f775f6c4a20b5d54f2bc702a648, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _head: {fileID: 4665439326672968814}
+  _doDebugDraw: 1
+  _interactableLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  _interactionDistance: 2
+  _grabDistanceMin: 1
+  _grabDistanceMax: 2.5
+  _grabDistanceLerpSpeed: 0.2
+  _grabStrength: 1000
+  _grabMaxForce: 2000
+  _throwForce: 50
+  interactKey: 102
+  _grabDistanceSpeed: 0.2
 --- !u!1 &4665439325798902107
 GameObject:
   m_ObjectHideFlags: 0
@@ -485,7 +514,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4665439326202348391}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.10959, y: 0.8698458, z: -0.22396588, w: -0.42567322}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -678,7 +707,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4665439326672968814}
   m_Layer: 0
-  m_Name: cinemachine position target
+  m_Name: cinemachine follow target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
