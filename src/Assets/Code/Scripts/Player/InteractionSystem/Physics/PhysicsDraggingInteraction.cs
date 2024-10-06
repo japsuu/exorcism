@@ -49,46 +49,75 @@ namespace Player.InteractionSystem
         }
 
 
-        public void OnStart()
+        public void OnStartInteraction()
         {
             if (_positionTarget != null)
             {
                 Debug.LogWarning("Position target already exists. This should not happen.", this);
-                OnStop();
+                OnStopInteraction();
             }
             
+            // Create a position target for the object
             _positionTarget = CreatePositionTarget(
                 _rb,
                 InteractionInvoker.Instance.GrabTargetPosition,
                 transform.rotation,
                 InteractionInvoker.Instance.GrabStrength,
-                InteractionInvoker.Instance.GrabMaxForce);
+                InteractionInvoker.Instance.GrabMaxForce
+            );
         }
 
 
-        public void OnUpdate()
+        public void OnUpdateInteraction()
         {
             if (_positionTarget == null)
                 return;
-            
-            _positionTarget.position = InteractionInvoker.Instance.GrabTargetPosition;
 
-            if (Input.GetMouseButton(1))
-            {
-                // TODO. Move to GrabTargetRotation in InteractionInvoker?
-                Quaternion rotation = _positionTarget.rotation;
-                rotation *= Quaternion.Euler(Input.GetAxis("Mouse Y") * 2, Input.GetAxis("Mouse X") * 2, 0);
-                _positionTarget.rotation = rotation;
-            }
+            UpdateTargetPosition();
 
+            UpdateTargetRotation();
+
+            // Handle throwing with the left mouse button
             if (Input.GetMouseButtonDown(0))
-            {
                 _requestThrow = true;
-            }
         }
 
 
-        public void OnStop()
+        private void UpdateTargetRotation()
+        {
+            Quaternion currentRotation = _positionTarget.rotation;
+            Quaternion rotationChange;
+            
+            if (Input.GetMouseButton(1))
+            {
+                rotationChange = Quaternion.Euler(Input.GetAxis("Mouse Y") * 2, Input.GetAxis("Mouse X") * 2, 0);
+            }
+            else
+            {
+                rotationChange = Quaternion.identity;
+                
+                //TODO: Implement this
+                // Rotate the target on the Y-axis to match the player rotation.
+                // This is done to prevent the object from rotating when the player is looking around.
+                // Vector3 playerDirection = InteractionInvoker.Instance.RaycastDirection;
+                // playerDirection.y = 0;
+                // Quaternion forwardTarget = Quaternion.LookRotation(playerDirection, Vector3.up);
+            }
+            
+            currentRotation *= rotationChange;
+            
+            _positionTarget.rotation = currentRotation;
+        }
+
+
+        private void UpdateTargetPosition()
+        {
+            // Update position target's position to follow grab target position
+            _positionTarget.position = InteractionInvoker.Instance.GrabTargetPosition;
+        }
+
+
+        public void OnStopInteraction()
         {
             if (_positionTarget == null)
                 Debug.LogWarning("Position target does not exist. This should not happen.", this);
@@ -119,17 +148,17 @@ namespace Player.InteractionSystem
         /// and attaches the rigidbody to it using a configurable joint.
         /// </summary>
         /// <param name="rb">The rigidbody to attach to the target.</param>
-        /// <param name="attachmentPosition"></param>
-        /// <param name="attachmentRotation"></param>
+        /// <param name="targetPos"></param>
+        /// <param name="targetRot"></param>
         /// <param name="springStrength"></param>
         /// <param name="maxForce"></param>
         /// <returns></returns>
-        private static Transform CreatePositionTarget(Rigidbody rb, Vector3 attachmentPosition, Quaternion attachmentRotation, float springStrength, float maxForce)
+        private static Transform CreatePositionTarget(Rigidbody rb, Vector3 targetPos, Quaternion targetRot, float springStrength, float maxForce)
         {
             GameObject target = new("Attachment Point");
             //target.hideFlags = HideFlags.HideInHierarchy;
-            target.transform.position = attachmentPosition;
-            target.transform.rotation = attachmentRotation;
+            target.transform.position = targetPos;
+            target.transform.rotation = targetRot;
 
             Rigidbody targetRb = target.AddComponent<Rigidbody>();
             targetRb.isKinematic = true;

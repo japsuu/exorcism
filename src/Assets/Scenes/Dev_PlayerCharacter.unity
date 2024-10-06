@@ -130,11 +130,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4665439325745049144, guid: 7a7c867af48cbe94e8b98d3d976e431f,
-        type: 3}
-      propertyPath: SimulatedCharacterMass
-      value: 80
-      objectReference: {fileID: 0}
     - target: {fileID: 4665439325745049148, guid: 7a7c867af48cbe94e8b98d3d976e431f,
         type: 3}
       propertyPath: m_LocalPosition.x

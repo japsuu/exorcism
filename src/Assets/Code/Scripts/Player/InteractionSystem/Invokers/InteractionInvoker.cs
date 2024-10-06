@@ -58,6 +58,7 @@ namespace Player.InteractionSystem
         
         public Vector3 RaycastPosition => _head.position;
         public Vector3 RaycastDirection => _head.forward;
+        public Quaternion RaycastPointRotation => _head.rotation;
         /// <summary>
         /// The position the player is currently looking at, with the current grab distance applied.
         /// </summary>
